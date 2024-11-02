@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{20CFA863-63B3-4981-BD52-81856EC12FA9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>COM3D2.GripMovePlugin.Plugin</RootNamespace>
+    <AssemblyName>COM3D2.GripMovePlugin.Plugin</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\libs\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\libs\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="ExIni">
+      <HintPath>..\libs\ExIni.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\libs\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityInjector">
+      <HintPath>..\libs\UnityInjector.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\CM2COM.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\ControllerTouchAreaName.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\CustomMaidTouchArea.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\DebugHelper.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\DeviceOculusTouchController.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\DeviceViveController.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\DeviceWrapper.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\DirectTouchController.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\DirectTouchMaid.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\DirectTouchTool.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\DoubleSidePlane.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\FastGUI.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\FirstPersonCameraHelper.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\GripMoveController.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\GripMoveControllerBase.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\GripMoveControllerTouch.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\GripMovePlugin.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\GUIQuad.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\IK.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\IKTool.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\IMGUIQuad.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\MaidTouchAreaName.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\MaterialHelper.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\MenuTool.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\MenuToolBase.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\MenuToolTouch.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\MoveableGUIObject.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\OnDestroyAction.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\POINT.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\RECT.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\Resource.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\Settings.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\SkirtIKTool.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\SlowGUI.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\TouchArea.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\UIButtonAlias.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\UIButtonDestroyListerner.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\UICameraUtil.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\UIUtils.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\VIVEModelReplaceTool.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\VRContextUtil.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\Win32API.cs" />
+    <Compile Include="CM3D2\GripMovePlugin\Plugin\YotogiCommandTool.cs" />
+    <Compile Include="GearMenu\Buttons.cs" />
+    <Compile Include="GearMenu\DefaultIcon.cs" />
+    <Compile Include="ProceduralPlane.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CM3D2\GripMovePlugin\Plugin\Resource.resources" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
