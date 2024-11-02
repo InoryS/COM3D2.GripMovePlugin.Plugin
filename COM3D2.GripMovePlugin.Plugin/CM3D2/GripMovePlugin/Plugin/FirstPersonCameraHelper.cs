@@ -12,27 +12,23 @@ namespace CM3D2.GripMovePlugin.Plugin
 		public static GameObject FindManHead()
 		{
 			GameObject gameObject = GameObject.Find("__GameMain__/Character/Active/AllOffset/Man[0]");
-			Transform[] array = (gameObject ? gameObject.GetComponentsInChildren<Transform>() : new Transform[0]).Where((Transform trans) => trans.name.IndexOf("_SM_") > -1).ToArray<Transform>();
+			Transform[] array = (gameObject ? gameObject.GetComponentsInChildren<Transform>() : new Transform[0])
+				.Where((Transform trans) => trans.name.IndexOf("_SM_") > -1)
+				.ToArray();
+
 			for (int i = 0; i < array.Length; i++)
 			{
-				using (IEnumerator enumerator = array[i].gameObject.transform.GetEnumerator())
+				foreach (Transform transform in array[i].gameObject.transform)
 				{
-					while (enumerator.MoveNext())
+					if (transform.name.IndexOf("ManHead") > -1)
 					{
-						object obj = enumerator.Current;
-						Transform transform = (Transform)obj;
-						if (transform.name.IndexOf("ManHead") > -1)
-						{
-							return transform.gameObject;
-						}
+						return transform.gameObject;
 					}
-					goto IL_00B6;
 				}
-				continue;
-				IL_00B6:;
 			}
 			return null;
 		}
+
 
 		// Token: 0x06000130 RID: 304 RVA: 0x00008404 File Offset: 0x00006604
 		public static bool isChubLip()

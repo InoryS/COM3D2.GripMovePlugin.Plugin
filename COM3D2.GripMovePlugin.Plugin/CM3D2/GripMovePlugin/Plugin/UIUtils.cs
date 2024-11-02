@@ -63,27 +63,24 @@ namespace CM3D2.GripMovePlugin.Plugin
 			{
 				return null;
 			}
-			GameObject gameObject2;
-			using (IEnumerator enumerator = go.transform.GetEnumerator())
+
+			foreach (Transform transform in go.transform)
 			{
-				while (enumerator.MoveNext())
+				if (transform.gameObject.name == s)
 				{
-					object obj = enumerator.Current;
-					Transform transform = (Transform)obj;
-					if (!(transform.gameObject.name != s))
-					{
-						return transform.gameObject;
-					}
-					GameObject gameObject = UIUtils.FindChild(transform.gameObject, s);
-					if (gameObject)
-					{
-						return gameObject;
-					}
+					return transform.gameObject;
 				}
-				gameObject2 = null;
+
+				GameObject foundChild = FindChild(transform.gameObject, s);
+				if (foundChild != null)
+				{
+					return foundChild;
+				}
 			}
-			return gameObject2;
+
+			return null;
 		}
+
 
 		// Token: 0x0600019D RID: 413 RVA: 0x0000ADA0 File Offset: 0x00008FA0
 		public static GameObject GetButtonTemplateGo()
