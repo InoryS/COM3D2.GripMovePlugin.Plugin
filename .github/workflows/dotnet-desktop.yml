@@ -29,6 +29,6 @@ jobs:
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: COM3D2.VoiceShortcutManager.Plugin
-          path: /home/runner/work/OM3D2.GripMovePlugin.Plugin/OM3D2.GripMovePlugin.Plugin/bin/Release/OM3D2.GripMovePlugin.Plugin.dll
+          name: COM3D2.GripMovePlugin.Plugin
+          path: /home/runner/work/COM3D2.GripMovePlugin.Plugin/COM3D2.GripMovePlugin.Plugin/COM3D2.GripMovePlugin.Plugin/bin/Release/COM3D2.GripMovePlugin.Plugin.dll
     
