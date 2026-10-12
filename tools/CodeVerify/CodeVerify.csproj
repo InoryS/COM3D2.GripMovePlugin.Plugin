@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    静态验证工具（不参与插件构建，也不在 .slnx 里）。
+    参数说明见 Program.cs 顶部注释。
+    运行： dotnet run 加 project 指向本目录，参数按 Program.cs 注释传。
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>CodeVerify</AssemblyName>
+    <RootNamespace>CodeVerify</RootNamespace>
+  </PropertyGroup>
+
+</Project>
