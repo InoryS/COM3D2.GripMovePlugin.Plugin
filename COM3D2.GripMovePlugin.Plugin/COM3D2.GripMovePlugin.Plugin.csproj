@@ -53,9 +53,6 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
-    <!-- 留空：命名空间一律由文件夹路径决定（COM3D2/GripMovePlugin/Plugin -> COM3D2.GripMovePlugin.Plugin）。
-         若在此填值，IDE 同步命名空间时会再叠加一层。 -->
-    <RootNamespace></RootNamespace>
     <TargetFramework>net35</TargetFramework>
   </PropertyGroup>
 
