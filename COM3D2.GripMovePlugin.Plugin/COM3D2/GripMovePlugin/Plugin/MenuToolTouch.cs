@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#if !COM3D25_UNITY_2022
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 using Valve.VR;
@@ -349,3 +350,4 @@ internal class MenuToolTouch : MenuToolBase
 		}
 	}
 }
+#endif

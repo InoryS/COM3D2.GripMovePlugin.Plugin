@@ -12,7 +12,9 @@ public class DirectTouchController : MonoBehaviour
 
 	public DeviceWrapper vrdeviceWrapper;
 
+#if !COM3D25_UNITY_2022
 	private SteamVR_TrackedObject _trackedObject;
+#endif
 
 	public List<TouchArea> lastAddedTAs = new();
 
@@ -30,6 +32,7 @@ public class DirectTouchController : MonoBehaviour
 
 	private Vector3 position = Vector3.zero;
 
+#if !COM3D25_UNITY_2022
 	public SteamVR_Controller.Device vrcontroller
 	{
 		get
@@ -44,6 +47,11 @@ public class DirectTouchController : MonoBehaviour
 	}
 
 	private void Awake() => _trackedObject = GetComponent<SteamVR_TrackedObject>();
+#else
+	private void Awake()
+	{
+	}
+#endif
 
 	private void OnDestroy() => DirectTouchTool.Instance.controllers.Remove(this);
 

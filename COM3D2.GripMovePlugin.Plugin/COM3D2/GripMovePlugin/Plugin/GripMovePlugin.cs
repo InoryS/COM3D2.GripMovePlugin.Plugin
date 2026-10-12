@@ -414,6 +414,18 @@ public class GripMovePlugin : PluginBase
 	private void tryGrabCamera()
 	{
 		var gameObject = GameObject.Find("BaseRoomBase");
+#if COM3D25_UNITY_2022
+		// COM3D2.5 / XR：只有 OvrCamera，没有 ViveCamera
+		OvrCamera ovrCamera = GameMain.Instance.OvrMgr.OvrCamera;
+		if (ovrCamera != null)
+		{
+			Debug.Log("OvrCamera Found: " + ovrCamera.name);
+			vrCameraOrigin = gameObject;
+			return;
+		}
+
+		Console.WriteLine("OvrCamera Not Found");
+#else
 		if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)2)
 		{
 			ViveCamera viveCamera = FindObjectOfType<ViveCamera>();
@@ -437,10 +449,14 @@ public class GripMovePlugin : PluginBase
 
 			Console.WriteLine("OvrCamera Not Found");
 		}
+#endif
 	}
 
 	private void tryInstallGripMoveController()
 	{
+#if COM3D25_UNITY_2022
+		tryInstallGripMoveControllerXR();
+#else
 		if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)2)
 		{
 			tryInstallGripMoveControllerVIVE();
@@ -451,8 +467,41 @@ public class GripMovePlugin : PluginBase
 		{
 			tryInstallGripMoveControllerTouch();
 		}
+#endif
 	}
 
+#if COM3D25_UNITY_2022
+	private void tryInstallGripMoveControllerXR()
+	{
+		OvrMgr.OvrObject ovr_obj = GameMain.Instance.OvrMgr.ovr_obj;
+		if (ovr_obj != null)
+		{
+			if (ovr_obj.left_controller.controller != null && !leftInstalled)
+			{
+				GripMoveControllerXR gripMoveControllerXR =
+					ovr_obj.left_controller.controller.gameObject
+						.GetComponent<GripMoveControllerXR>() ?? ovr_obj.left_controller.controller
+						.gameObject.AddComponent<GripMoveControllerXR>();
+				gripMoveControllerXR.ovrController = ovr_obj.left_controller;
+				gripMoveControllerXR.target = vrCameraOrigin;
+				leftController = gripMoveControllerXR;
+				leftInstalled = true;
+			}
+
+			if (ovr_obj.right_controller.controller != null && !rightInstalled)
+			{
+				GripMoveControllerXR gripMoveControllerXR2 =
+					ovr_obj.right_controller.controller.gameObject
+						.GetComponent<GripMoveControllerXR>() ?? ovr_obj.right_controller.controller
+						.gameObject.AddComponent<GripMoveControllerXR>();
+				gripMoveControllerXR2.ovrController = ovr_obj.right_controller;
+				gripMoveControllerXR2.target = vrCameraOrigin;
+				rightController = gripMoveControllerXR2;
+				rightInstalled = true;
+			}
+		}
+	}
+#else
 	private void tryInstallGripMoveControllerTouch()
 	{
 		OVRCameraRig componentInParent = GameMain.Instance.OvrMgr.OvrCamera.gameObject
@@ -531,4 +580,5 @@ public class GripMovePlugin : PluginBase
 			}
 		}
 	}
+#endif
 }

@@ -4,7 +4,9 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+#if !COM3D25_UNITY_2022
 using Valve.VR;
+#endif
 
 namespace COM3D2.GripMovePlugin.Plugin;
 
@@ -40,7 +42,11 @@ internal abstract class MenuToolBase : MonoBehaviour
 
 	protected GUIQuad Gui;
 
+#if COM3D25_UNITY_2022
+	protected AVRControllerButtons.BTN IKToolButton = AVRControllerButtons.BTN.GRIP;
+#else
 	protected EVRButtonId IKToolButton = (EVRButtonId)2;
+#endif
 
 	protected float IKToolSensorRatio = 0.01f;
 
@@ -58,7 +64,11 @@ internal abstract class MenuToolBase : MonoBehaviour
 
 	private GameObject grabHandle;
 
+#if COM3D25_UNITY_2022
+	protected AVRControllerButtons.BTN grabScreenButton = AVRControllerButtons.BTN.TRIGGER;
+#else
 	protected EVRButtonId grabScreenButton = (EVRButtonId)33;
+#endif
 
 	private GameObject grabbingObject;
 
@@ -90,9 +100,15 @@ internal abstract class MenuToolBase : MonoBehaviour
 
 	protected float mouseCursorSpeed = 0.1f;
 
+#if COM3D25_UNITY_2022
+	protected AVRControllerButtons.BTN moveSelfButton;
+
+	protected AVRControllerButtons.BTN moveToHeadButton;
+#else
 	protected EVRButtonId moveSelfButton;
 
 	protected EVRButtonId moveToHeadButton;
+#endif
 
 	protected bool moveToHeadEnabled = true;
 
@@ -116,7 +132,11 @@ internal abstract class MenuToolBase : MonoBehaviour
 
 	protected AVRController vrController;
 
+#if COM3D25_UNITY_2022
+	protected AVRControllerButtons.BTN yotogiToolButton = AVRControllerButtons.BTN.GRIP;
+#else
 	protected EVRButtonId yotogiToolButton = (EVRButtonId)2;
+#endif
 	public bool IsMovingSelf { get; set; }
 
 	private void Awake()
@@ -125,10 +145,18 @@ internal abstract class MenuToolBase : MonoBehaviour
 
 	private void Start()
 	{
+#if COM3D25_UNITY_2022
+		grabScreenButton = Settings.Instance.GetButton("MoveScreenButton", AVRControllerButtons.BTN.TRIGGER);
+#else
 		grabScreenButton = Settings.Instance.GetButton("MoveScreenButton", (EVRButtonId)33);
+#endif
 		activateOrResetSec = Settings.Instance.GetFloatValue("ActivateOrResetSeconds", 1.5f);
 		mouseCursorSpeed = Settings.Instance.GetFloatValue("MouseCursorSpeed", 0.1f);
+#if COM3D25_UNITY_2022
+		yotogiToolButton = Settings.Instance.GetButton("YotogiCommandToolButton", AVRControllerButtons.BTN.GRIP);
+#else
 		yotogiToolButton = Settings.Instance.GetButton("YotogiCommandToolButton", (EVRButtonId)2);
+#endif
 		directTouchSensorRatio = Settings.Instance.GetFloatValue("DirectTouchSensorRatio", 0.1f);
 		IKToolSensorRatio = Settings.Instance.GetFloatValue("IKTouchSensorRatio", 0.01f);
 		pointerVisible = Settings.Instance.GetBoolValue("PointerVisible", true);
@@ -142,12 +170,24 @@ internal abstract class MenuToolBase : MonoBehaviour
 			commandTool.gameObject.SetActive(false);
 		}
 
+#if COM3D25_UNITY_2022
+		moveSelfButton = Settings.Instance.GetButton("MoveSelfButton", AVRControllerButtons.BTN.GRIP);
+#else
 		moveSelfButton = Settings.Instance.GetButton("MoveSelfButton", (EVRButtonId)2);
+#endif
 		moveToHeadEnabled = Settings.Instance.GetBoolValue("MoveToHeadEnabled", true);
+#if COM3D25_UNITY_2022
+		moveToHeadButton = Settings.Instance.GetButton("MoveToHeadButton", AVRControllerButtons.BTN.VIRTUAL_L_CLICK);
+#else
 		moveToHeadButton = Settings.Instance.GetButton("MoveToHeadButton", (EVRButtonId)32);
+#endif
 		grabHandle = new GameObject("_grab_handle_");
 		grabHandle.transform.parent = transform;
+#if COM3D25_UNITY_2022
+		IKToolButton = Settings.Instance.GetButton("IKToolButton", AVRControllerButtons.BTN.GRIP);
+#else
 		IKToolButton = Settings.Instance.GetButton("IKToolButton", (EVRButtonId)2);
+#endif
 		if (Settings.Instance.GetBoolValue("IKToolEnabled", true))
 		{
 			if (ikTool == null)
@@ -623,7 +663,11 @@ internal abstract class MenuToolBase : MonoBehaviour
 					grabbingObject.GetComponent<MoveableGUIObject>().OnMoved();
 				}
 
+#if COM3D25_UNITY_2022
+				if (grabScreenButton == AVRControllerButtons.BTN.TRIGGER && ovrGripCollider != null &&
+#else
 				if (grabScreenButton == (EVRButtonId)33 && ovrGripCollider != null &&
+#endif
 				    ovrGripCollider.enabled && ovrGripCollider.grip &&
 				    Time.time - m_grabbingStartTime > 0.1f)
 				{
@@ -637,9 +681,21 @@ internal abstract class MenuToolBase : MonoBehaviour
 				grabbingObject = null;
 			}
 
-			if (!screenGrabbed && IsIKToolActive() && controller.GetPressUp(32))
+			if (!screenGrabbed && IsIKToolActive() && controller.GetPressUp(
+#if COM3D25_UNITY_2022
+				AVRControllerButtons.BTN.VIRTUAL_L_CLICK
+#else
+				32
+#endif
+			))
 			{
-				if (!moveToHeadEnabled || moveToHeadButton != (EVRButtonId)32 ||
+				if (!moveToHeadEnabled || moveToHeadButton !=
+#if COM3D25_UNITY_2022
+					AVRControllerButtons.BTN.VIRTUAL_L_CLICK
+#else
+					(EVRButtonId)32
+#endif
+				||
 				    !controller.GetPress(moveSelfButton))
 				{
 					ikTool.ToggleMarkerVisibility();
@@ -648,7 +704,13 @@ internal abstract class MenuToolBase : MonoBehaviour
 				pressDownTime = 0f;
 			}
 
-			if (press && IsDirectModeActive() && controller.GetPressUp(32))
+			if (press && IsDirectModeActive() && controller.GetPressUp(
+#if COM3D25_UNITY_2022
+				AVRControllerButtons.BTN.VIRTUAL_L_CLICK
+#else
+				32
+#endif
+			))
 			{
 				ChangeToNextModel();
 			}

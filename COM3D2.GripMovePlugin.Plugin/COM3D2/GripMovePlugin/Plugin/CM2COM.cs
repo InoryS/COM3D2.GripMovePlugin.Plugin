@@ -8,6 +8,10 @@ internal static class CM2COM
 {
 	public static Component FindOvrCamera()
 	{
+#if COM3D25_UNITY_2022
+		// COM3D2.5 / XR 下没有 SteamVR 摄像机，与原 XR 版一致直接返回 null
+		return null;
+#else
 		Component component = Object.FindObjectOfType<SteamVR_GameView>();
 		if (component == null)
 		{
@@ -16,6 +20,7 @@ internal static class CM2COM
 		}
 
 		return component;
+#endif
 	}
 
 	public static GameObject FindOvrScreen()

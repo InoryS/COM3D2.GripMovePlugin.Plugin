@@ -636,8 +636,14 @@ public class IKTool : MonoBehaviour
 						}
 					}
 
+#if COM3D25_UNITY_2022
+					for (int i = 0; i < tbody.goSlot.Count; i++)
+					{
+						TBodySkin tbodySkin3 = tbody.goSlot[i];
+#else
 					foreach (TBodySkin tbodySkin3 in tbody.goSlot)
 					{
+#endif
 						if (tbodySkin3.Category.StartsWith("hair"))
 						{
 							TBodyHit bodyhit = tbodySkin3.bonehair.bodyhit;
@@ -987,8 +993,14 @@ public class IKTool : MonoBehaviour
 				streamWriter.WriteLine("Kata: {0}", x2);
 				streamWriter.WriteLine("Mid:  {0}", x3);
 				streamWriter.WriteLine("Koshi:{0}", x4);
+#if COM3D25_UNITY_2022
+				for (int i2 = 0; i2 < tbody.goSlot.Count; i2++)
+				{
+					TBodySkin tbodySkin = tbody.goSlot[i2];
+#else
 				foreach (TBodySkin tbodySkin in tbody.goSlot)
 				{
+#endif
 					if (type == null || tbodySkin.Category.StartsWith(type))
 					{
 						num++;

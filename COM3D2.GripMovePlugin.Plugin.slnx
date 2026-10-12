@@ -1,3 +1,9 @@
 ﻿<Solution>
+  <Configurations>
+    <BuildType Name="COM3D2-Debug" />
+    <BuildType Name="COM3D2-Release" />
+    <BuildType Name="COM3D25_UNITY_2022-Debug" />
+    <BuildType Name="COM3D25_UNITY_2022-Release" />
+  </Configurations>
   <Project Path="COM3D2.GripMovePlugin.Plugin/COM3D2.GripMovePlugin.Plugin.csproj"/>
 </Solution>

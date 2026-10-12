@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if !COM3D25_UNITY_2022
+using UnityEngine;
 using Valve.VR;
 
 namespace COM3D2.GripMovePlugin.Plugin;
@@ -114,3 +115,4 @@ public class DeviceViveController : DeviceWrapper
 		device.TriggerHapticPulse(durationMicroSec, buttonId);
 	}
 }
+#endif

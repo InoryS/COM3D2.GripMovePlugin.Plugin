@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if !COM3D25_UNITY_2022
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace COM3D2.GripMovePlugin.Plugin;
@@ -64,3 +65,4 @@ internal class GripMoveControllerTouch : GripMoveControllerBase
 		}
 	}
 }
+#endif

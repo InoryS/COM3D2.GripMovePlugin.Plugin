@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if !COM3D25_UNITY_2022
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -364,3 +365,4 @@ internal class MenuTool : MenuToolBase
 		}
 	}
 }
+#endif

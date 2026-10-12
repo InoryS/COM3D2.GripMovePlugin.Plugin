@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using ExIni;
+#if !COM3D25_UNITY_2022
 using Valve.VR;
+#endif
 
 namespace COM3D2.GripMovePlugin.Plugin;
 
@@ -60,6 +62,52 @@ internal class Settings
 		return defaultValue;
 	}
 
+	public int GetIntValue(string keyString, int defaultValue)
+	{
+		IniSection section = file.GetSection("GripMovePlugin");
+		if (section != null)
+		{
+			IniKey key = section.GetKey(keyString);
+			if (key != null)
+			{
+				string value = key.Value;
+				if (value != null && int.TryParse(value, out int num))
+				{
+					return num;
+				}
+			}
+		}
+
+		return defaultValue;
+	}
+
+#if COM3D25_UNITY_2022
+	public AVRControllerButtons.BTN GetButton(string key, AVRControllerButtons.BTN defaultButton)
+	{
+		string buttonById = GetButtonById(key);
+		if ("Grip".Equals(buttonById))
+		{
+			return AVRControllerButtons.BTN.GRIP;
+		}
+
+		if ("Trigger".Equals(buttonById))
+		{
+			return AVRControllerButtons.BTN.TRIGGER;
+		}
+
+		if ("Touchpad".Equals(buttonById))
+		{
+			return AVRControllerButtons.BTN.VIRTUAL_L_CLICK;
+		}
+
+		if ("ApplicationMenu".Equals(buttonById))
+		{
+			return AVRControllerButtons.BTN.MENU;
+		}
+
+		return defaultButton;
+	}
+#else
 	public EVRButtonId GetButton(string key, EVRButtonId defaultButton)
 	{
 		string buttonById = GetButtonById(key);
@@ -85,6 +133,7 @@ internal class Settings
 
 		return defaultButton;
 	}
+#endif
 
 	private string GetButtonById(string keyString)
 	{

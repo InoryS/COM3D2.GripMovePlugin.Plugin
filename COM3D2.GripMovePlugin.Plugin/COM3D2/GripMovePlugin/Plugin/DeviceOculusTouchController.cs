@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if !COM3D25_UNITY_2022
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
@@ -305,3 +306,4 @@ public class DeviceOculusTouchController : DeviceWrapper
 		StartCoroutine(StopHapticCo());
 	}
 }
+#endif

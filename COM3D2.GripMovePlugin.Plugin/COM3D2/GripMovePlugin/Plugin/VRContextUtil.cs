@@ -14,6 +14,20 @@ internal class VRContextUtil
 
 	public static Transform FindOVRHeadTransformDirect()
 	{
+#if COM3D25_UNITY_2022
+		// COM3D2.5 / XR：直接按节点名找头显，不依赖 OVRCameraRig
+		if (GameMain.Instance.VRFamily == GameMain.VRFamilyType.Oculus)
+		{
+			return GameObject.Find("TrackingSpace/CenterEyeAnchor").transform;
+		}
+
+		if (GameMain.Instance.VRFamily == GameMain.VRFamilyType.HTC)
+		{
+			return GameObject.Find("Main Camera (eye)").transform;
+		}
+
+		return null;
+#else
 		if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)1)
 		{
 			OVRCameraRig componentInParent = GameMain.Instance.OvrMgr.OvrCamera.gameObject
@@ -33,5 +47,6 @@ internal class VRContextUtil
 		}
 
 		return null;
+#endif
 	}
 }

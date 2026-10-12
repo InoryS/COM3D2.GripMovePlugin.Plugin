@@ -1,10 +1,64 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <PackageReference Include="COM3D2.GameLibs" Version="2.43.1-r.0"/>
-    <PackageReference Include="UnityEngine.Modules" IncludeAssets="compile" Version="5.6.4"/>
-  </ItemGroup>
+  <!-- ===== 依赖按构建配置分流 =====
+       COM3D2-*               → COM3D2   / Unity 5.6.4
+       COM3D25_UNITY_2022-*   → COM3D2.5 / Unity 2022.3
+       注意：Contains('COM3D2-') 不会误匹配 COM3D25_UNITY_2022-
+       （"COM3D25_UNITY_2022-" 里 "COM3D2" 后面是 "5" 而不是 "-"） -->
+  <Choose>
+    <When Condition="$(Configuration.Contains('COM3D2-'))">
+      <ItemGroup>
+        <PackageReference Include="COM3D2.GameLibs" Version="2.43.1-r.0"/>
+        <PackageReference Include="UnityEngine.Modules" IncludeAssets="compile" Version="5.6.4"/>
+      </ItemGroup>
+    </When>
+    <When Condition="$(Configuration.Contains('COM3D25_UNITY_2022-'))">
+      <ItemGroup>
+        <PackageReference Include="COM3D2.GameLibs" Version="3.44.1-r.0"/>
+        <PackageReference Include="UnityEngine.Modules" IncludeAssets="compile" Version="2022.3.35"/>
+      </ItemGroup>
+    </When>
+  </Choose>
 
+  <!-- ===== 每配置的 TFM / 编译常量 / 输出目录 =====
+       AssemblyName 两个平台保持一致，产物同名同插件名，只有 TFM 与输出目录不同。 -->
+  <Choose>
+    <When Condition="'$(Configuration)|$(Platform)' == 'COM3D2-Debug|AnyCPU'">
+      <PropertyGroup>
+        <TargetFramework>net35</TargetFramework>
+        <DefineConstants>COM3D2;DEBUG;TRACE</DefineConstants>
+        <OutputPath>bin\Debug\COM3D2\</OutputPath>
+        <Optimize>false</Optimize>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(Configuration)|$(Platform)' == 'COM3D2-Release|AnyCPU'">
+      <PropertyGroup>
+        <TargetFramework>net35</TargetFramework>
+        <DefineConstants>COM3D2</DefineConstants>
+        <OutputPath>bin\Release\COM3D2\</OutputPath>
+        <Optimize>true</Optimize>
+      </PropertyGroup>
+    </When>
+
+    <When Condition="'$(Configuration)|$(Platform)' == 'COM3D25_UNITY_2022-Debug|AnyCPU'">
+      <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <DefineConstants>COM3D25_UNITY_2022;DEBUG;TRACE</DefineConstants>
+        <OutputPath>bin\Debug\COM3D25\</OutputPath>
+        <Optimize>false</Optimize>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(Configuration)|$(Platform)' == 'COM3D25_UNITY_2022-Release|AnyCPU'">
+      <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <DefineConstants>COM3D25_UNITY_2022</DefineConstants>
+        <OutputPath>bin\Release\COM3D25\</OutputPath>
+        <Optimize>true</Optimize>
+      </PropertyGroup>
+    </When>
+  </Choose>
+
+  <!-- ===== 随插件分发的本地程序集（两个平台共用） ===== -->
   <ItemGroup>
     <Reference Include="UnityInjector">
       <HintPath>..\libs\UnityInjector.dll</HintPath>
@@ -14,6 +68,7 @@
     </Reference>
   </ItemGroup>
 
+  <!-- ===== 内嵌资源 ===== -->
   <ItemGroup>
     <EmbeddedResource Include="COM3D2\GripMovePlugin\Plugin\Resources\gripmovepluginshaders.bin">
       <LogicalName>COM3D2.GripMovePlugin.Plugin.Resources.gripmovepluginshaders.bin</LogicalName>
@@ -23,19 +78,36 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- ===== .NET Framework 参考程序集（Linux 上也能编译） ===== -->
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" Version="1.0.3"/>
   </ItemGroup>
 
   <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>COM3D2.GripMovePlugin.Plugin</AssemblyName>
     <AssemblyTitle>GripMovePlugin</AssemblyTitle>
     <Copyright>Copyright © 2016</Copyright>
+    <DebugType>portable</DebugType>
+    <Deterministic>true</Deterministic>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
     <Product>GripMovePlugin</Product>
     <Version>0.8.9.5</Version>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Configurations>COM3D2-Debug;COM3D2-Release;COM3D25_UNITY_2022-Debug;COM3D25_UNITY_2022-Release</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- 留空：命名空间一律由文件夹路径决定（COM3D2/GripMovePlugin/Plugin -> COM3D2.GripMovePlugin.Plugin）。
+         若在此填值，IDE 同步命名空间时会再叠加一层。 -->
+    <RootNamespace></RootNamespace>
+  </PropertyGroup>
 
   <PropertyGroup>
     <RestoreAdditionalProjectSources>
@@ -43,17 +115,6 @@
       https://nuget.bepinex.dev/v3/index.json;
       https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AssemblyName>COM3D2.GripMovePlugin.Plugin</AssemblyName>
-    <DebugType>portable</DebugType>
-    <Deterministic>true</Deterministic>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <LangVersion>latest</LangVersion>
-    <Nullable>disable</Nullable>
-    <TargetFramework>net35</TargetFramework>
   </PropertyGroup>
 
 </Project>

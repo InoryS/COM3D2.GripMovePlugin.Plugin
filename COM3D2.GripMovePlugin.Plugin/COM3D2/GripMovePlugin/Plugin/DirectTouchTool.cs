@@ -273,6 +273,77 @@ public class DirectTouchTool : MonoBehaviour
 		}
 	}
 
+#if COM3D25_UNITY_2022
+	private void InstallTouchToXR()
+	{
+		// COM3D2.5 / XR：没有 OVRCameraRig，改用 OvrMgr 提供的头显与手柄 Transform
+		Transform centerEyeAnchor = GameMain.Instance.OvrMgr.OvrCamera.m_goCenterEye.transform;
+		Transform leftHandAnchor = GameMain.Instance.OvrMgr.GetVRControllerTransform(true);
+		Transform rightHandAnchor = GameMain.Instance.OvrMgr.GetVRControllerTransform(false);
+
+		if (centerEyeAnchor != null)
+		{
+			DirectTouchController directTouchController =
+				centerEyeAnchor.gameObject.GetComponent<DirectTouchController>();
+			if (directTouchController == null)
+			{
+				directTouchController =
+					centerEyeAnchor.gameObject.AddComponent<DirectTouchController>();
+				directTouchController.areaName = ControllerTouchAreaName.MOUTH;
+				directTouchController.SetPosition(mouthPos);
+				directTouchController.radius = mouthHitRadius;
+				directTouchController.onHitHandler =
+					new Action<DirectTouchController, TouchArea, bool>(OnHit);
+				directTouchController.onStayHandler =
+					new Action<DirectTouchController, TouchArea>(OnStay);
+			}
+
+			controllers.Add(directTouchController);
+		}
+
+		if (leftHandAnchor != null)
+		{
+			DirectTouchController directTouchController2 =
+				leftHandAnchor.gameObject.GetComponent<DirectTouchController>();
+			if (directTouchController2 == null)
+			{
+				directTouchController2 =
+					leftHandAnchor.gameObject.AddComponent<DirectTouchController>();
+				directTouchController2.areaName = ControllerTouchAreaName.HAND_L;
+				directTouchController2.radius = handHitRadius;
+				directTouchController2.onHitHandler =
+					new Action<DirectTouchController, TouchArea, bool>(OnHit);
+				directTouchController2.onStayHandler =
+					new Action<DirectTouchController, TouchArea>(OnStay);
+				directTouchController2.vrdeviceWrapper = DeviceXRController.GetOrCreate(
+					directTouchController2.gameObject, GameMain.Instance.OvrMgr.ovr_obj.left_controller);
+			}
+
+			controllers.Add(directTouchController2);
+		}
+
+		if (rightHandAnchor != null)
+		{
+			DirectTouchController directTouchController3 =
+				rightHandAnchor.gameObject.GetComponent<DirectTouchController>();
+			if (directTouchController3 == null)
+			{
+				directTouchController3 =
+					rightHandAnchor.gameObject.AddComponent<DirectTouchController>();
+				directTouchController3.areaName = ControllerTouchAreaName.HAND_R;
+				directTouchController3.radius = handHitRadius;
+				directTouchController3.onHitHandler =
+					new Action<DirectTouchController, TouchArea, bool>(OnHit);
+				directTouchController3.onStayHandler =
+					new Action<DirectTouchController, TouchArea>(OnStay);
+				directTouchController3.vrdeviceWrapper = DeviceXRController.GetOrCreate(
+					directTouchController3.gameObject, GameMain.Instance.OvrMgr.ovr_obj.right_controller);
+			}
+
+			controllers.Add(directTouchController3);
+		}
+	}
+#else
 	private void InstallTouchToOculusTouch()
 	{
 		OVRCameraRig componentInParent = GameMain.Instance.OvrMgr.OvrCamera.gameObject
@@ -417,9 +488,13 @@ public class DirectTouchTool : MonoBehaviour
 			}
 		}
 	}
+#endif
 
 	private void InstallTouchToVRControllers()
 	{
+#if COM3D25_UNITY_2022
+		InstallTouchToXR();
+#else
 		if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)2)
 		{
 			InstallTouchToViveControllers();
@@ -430,6 +505,7 @@ public class DirectTouchTool : MonoBehaviour
 		{
 			InstallTouchToOculusTouch();
 		}
+#endif
 	}
 
 	private void OnActivateOnMaid(DirectTouchMaid dtm)

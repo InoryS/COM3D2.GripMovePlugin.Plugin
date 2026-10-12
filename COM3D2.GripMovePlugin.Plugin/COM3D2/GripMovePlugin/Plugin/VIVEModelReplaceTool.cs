@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !COM3D25_UNITY_2022
+using System;
 using System.Collections.Generic;
 using System.IO;
 using ExIni;
@@ -688,3 +689,4 @@ internal class VIVEModelReplaceTool : MonoBehaviour
 		}
 	}
 }
+#endif

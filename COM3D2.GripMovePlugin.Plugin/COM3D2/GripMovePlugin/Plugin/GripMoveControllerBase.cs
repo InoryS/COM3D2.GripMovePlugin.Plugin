@@ -48,11 +48,19 @@ internal abstract class GripMoveControllerBase : MonoBehaviour
 
 	protected MenuToolBase menuTool;
 
+#if COM3D25_UNITY_2022
+	protected AVRControllerButtons.BTN moveScreenButton;
+
+	protected AVRControllerButtons.BTN moveSelfButton;
+
+	protected AVRControllerButtons.BTN moveToHeadButton;
+#else
 	protected EVRButtonId moveScreenButton;
 
 	protected EVRButtonId moveSelfButton;
 
 	protected EVRButtonId moveToHeadButton;
+#endif
 
 	private OvrGripCollider ovrGripCollider;
 
@@ -64,13 +72,26 @@ internal abstract class GripMoveControllerBase : MonoBehaviour
 	{
 		m_txMode = GetTextForMode();
 		ovrGripCollider = GetComponent<OvrGripCollider>();
+#if COM3D25_UNITY_2022
+		moveSelfButton = Settings.Instance.GetButton("MoveSelfButton", AVRControllerButtons.BTN.GRIP);
+#else
 		moveSelfButton = Settings.Instance.GetButton("MoveSelfButton", (EVRButtonId)2);
+#endif
 		moveToHeadEnabled = Settings.Instance.GetBoolValue("MoveToHeadEnabled", true);
 		hideManHeadWhenJump = Settings.Instance.GetBoolValue("HideManHeadWhenJump", true);
+#if COM3D25_UNITY_2022
+		moveToHeadButton =
+			Settings.Instance.GetButton("MoveToHeadButton", AVRControllerButtons.BTN.STICK_PAD);
+#else
 		moveToHeadButton = Settings.Instance.GetButton("MoveToHeadButton", (EVRButtonId)32);
+#endif
 		eyePosDeltaUp = Settings.Instance.GetFloatValue("EyePosDeltaUp", 0.1f);
 		eyePosDeltaForward = Settings.Instance.GetFloatValue("EyePosDeltaForward", 0.05f);
+#if COM3D25_UNITY_2022
+		moveScreenButton = Settings.Instance.GetButton("MoveScreenButton", AVRControllerButtons.BTN.TRIGGER);
+#else
 		moveScreenButton = Settings.Instance.GetButton("MoveScreenButton", (EVRButtonId)33);
+#endif
 		controller = GetController();
 		PostStart();
 	}
@@ -227,6 +248,27 @@ internal abstract class GripMoveControllerBase : MonoBehaviour
 
 	protected virtual bool CheckGripMoveIgnore()
 	{
+#if COM3D25_UNITY_2022
+		if (moveSelfButton != AVRControllerButtons.BTN.GRIP &&
+		    controller.GetPress(AVRControllerButtons.BTN.GRIP))
+		{
+			return true;
+		}
+
+		if (moveSelfButton != AVRControllerButtons.BTN.TRIGGER &&
+		    controller.GetPress(AVRControllerButtons.BTN.TRIGGER))
+		{
+			return true;
+		}
+
+		if (moveSelfButton != AVRControllerButtons.BTN.STICK_PAD &&
+		    controller.GetPress(AVRControllerButtons.BTN.STICK_PAD))
+		{
+			return true;
+		}
+
+		return false;
+#else
 		foreach (EVRButtonId evrbuttonId in new[]
 		         {
 			         (EVRButtonId)2, (EVRButtonId)33, (EVRButtonId)32
@@ -239,6 +281,7 @@ internal abstract class GripMoveControllerBase : MonoBehaviour
 		}
 
 		return false;
+#endif
 	}
 
 	public abstract DeviceWrapper GetController();
@@ -266,7 +309,11 @@ internal abstract class GripMoveControllerBase : MonoBehaviour
 
 	private void OVRGripForceResetWhenMoving()
 	{
+#if COM3D25_UNITY_2022
+		if (moveSelfButton != AVRControllerButtons.BTN.TRIGGER)
+#else
 		if (moveSelfButton != (EVRButtonId)33)
+#endif
 		{
 			return;
 		}
@@ -278,9 +325,15 @@ internal abstract class GripMoveControllerBase : MonoBehaviour
 		}
 	}
 
+#if COM3D25_UNITY_2022
+	private bool IsOVRGripActiveAndConflicted() => moveSelfButton == AVRControllerButtons.BTN.TRIGGER &&
+	                                               ovrGripCollider != null &&
+	                                               ovrGripCollider.enabled && ovrGripCollider.grip;
+#else
 	private bool IsOVRGripActiveAndConflicted() => moveSelfButton == (EVRButtonId)33 &&
 	                                               ovrGripCollider != null &&
 	                                               ovrGripCollider.enabled && ovrGripCollider.grip;
+#endif
 
 	protected abstract void PostStart();
 
