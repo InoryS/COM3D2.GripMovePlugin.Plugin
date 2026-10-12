@@ -321,119 +321,117 @@ namespace CM3D2.GripMovePlugin.Plugin
 				array2[i] = material;
 			}
 			int num = 0;
-			using (StreamWriter streamWriter = File.CreateText("__skirt.log"))
+			using StreamWriter streamWriter = File.CreateText("__skirt.log");
+			foreach (TBody tbody in array)
 			{
-				foreach (TBody tbody in array)
+				streamWriter.WriteLine("===Skirt for " + tbody.maid.name + "===");
+				if (tbody.isActiveAndEnabled)
 				{
-					streamWriter.WriteLine("===Skirt for " + tbody.maid.name + "===");
-					if (tbody.isActiveAndEnabled)
+					TBodySkin tbodySkin = tbody.goSlot[8];
+					TBodySkin tbodySkin2 = tbody.goSlot[9];
+					Console.WriteLine(string.Format("Skirt: {0}, {1}, {2}", tbodySkin.boVisible, tbodySkin.m_strModelFileName, tbodySkin.obj));
+					Console.WriteLine(string.Format("Onepiece: {0}, {1}, {2}", tbodySkin2.boVisible, tbodySkin2.m_strModelFileName, tbodySkin2.obj));
+					if (tbodySkin.obj == null && tbodySkin2.obj != null)
 					{
-						TBodySkin tbodySkin = tbody.goSlot[8];
-						TBodySkin tbodySkin2 = tbody.goSlot[9];
-						Console.WriteLine(string.Format("Skirt: {0}, {1}, {2}", tbodySkin.boVisible, tbodySkin.m_strModelFileName, tbodySkin.obj));
-						Console.WriteLine(string.Format("Onepiece: {0}, {1}, {2}", tbodySkin2.boVisible, tbodySkin2.m_strModelFileName, tbodySkin2.obj));
-						if (tbodySkin.obj == null && tbodySkin2.obj != null)
+						tbodySkin = tbodySkin2;
+					}
+					if (tbodySkin.boVisible && tbodySkin.m_strModelFileName != "")
+					{
+						TBody.SlotID slotId = tbodySkin.SlotId;
+						streamWriter.WriteLine(string.Format("{0}, {1}", tbodySkin.Category, slotId));
+						streamWriter.WriteLine(tbodySkin.obj_tr.ToString());
+						streamWriter.WriteLine("== Hair1 ==");
+						List<THair1> list = (List<THair1>)tbodySkin.bonehair.GetType().GetField("hair1list", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField).GetValue(tbodySkin.bonehair);
+						for (int k = 0; k < list.Count; k++)
 						{
-							tbodySkin = tbodySkin2;
+							THair1 thair = list[k];
+							streamWriter.WriteLine(string.Format("{0}", thair.root.position.ToString()));
+							GameObject gameObject = GameObject.CreatePrimitive(0);
+							gameObject.name = "__dummy_hitsphere_view";
+							gameObject.transform.position = thair.root.position;
+							gameObject.transform.localScale = Vector3.one * 0.02f;
+							gameObject.GetComponent<Renderer>().sharedMaterial = array2[0];
 						}
-						if (tbodySkin.boVisible && tbodySkin.m_strModelFileName != "")
+						streamWriter.WriteLine("== SKIRT LIST ==");
+						THair1[] array4 = (THair1[])tbodySkin.bonehair.GetType().GetField("SkirtList", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField).GetValue(tbodySkin.bonehair);
+						float num2 = 0f;
+						List<Transform> list2 = new List<Transform>();
+						Transform root_oya = array4[0].root_oya;
+						for (int l = 3; l < 9; l++)
 						{
-							TBody.SlotID slotId = tbodySkin.SlotId;
-							streamWriter.WriteLine(string.Format("{0}, {1}", tbodySkin.Category, slotId));
-							streamWriter.WriteLine(tbodySkin.obj_tr.ToString());
-							streamWriter.WriteLine("== Hair1 ==");
-							List<THair1> list = (List<THair1>)tbodySkin.bonehair.GetType().GetField("hair1list", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField).GetValue(tbodySkin.bonehair);
-							for (int k = 0; k < list.Count; k++)
+							THair1 thair2 = array4[l];
+							streamWriter.WriteLine(string.Format("{0} {1}", thair2.root.position.ToString(), thair2.root_oya.ToString()));
+							list2.Add(thair2.root);
+						}
+						List<THitSphere> list3 = new List<THitSphere>();
+						for (int m = 3; m < 9; m++)
+						{
+							THair1 thair3 = array4[m];
+							Console.WriteLine("hplist count: " + thair3.hplist.Count);
+							for (int n = 0; n < thair3.hplist.Count; n += 2)
 							{
-								THair1 thair = list[k];
-								streamWriter.WriteLine(string.Format("{0}", thair.root.position.ToString()));
-								GameObject gameObject = GameObject.CreatePrimitive(0);
-								gameObject.name = "__dummy_hitsphere_view";
-								gameObject.transform.position = thair.root.position;
-								gameObject.transform.localScale = Vector3.one * 0.02f;
-								gameObject.GetComponent<Renderer>().sharedMaterial = array2[0];
-							}
-							streamWriter.WriteLine("== SKIRT LIST ==");
-							THair1[] array4 = (THair1[])tbodySkin.bonehair.GetType().GetField("SkirtList", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField).GetValue(tbodySkin.bonehair);
-							float num2 = 0f;
-							List<Transform> list2 = new List<Transform>();
-							Transform root_oya = array4[0].root_oya;
-							for (int l = 3; l < 9; l++)
-							{
-								THair1 thair2 = array4[l];
-								streamWriter.WriteLine(string.Format("{0} {1}", thair2.root.position.ToString(), thair2.root_oya.ToString()));
-								list2.Add(thair2.root);
-							}
-							List<THitSphere> list3 = new List<THitSphere>();
-							for (int m = 3; m < 9; m++)
-							{
-								THair1 thair3 = array4[m];
-								Console.WriteLine("hplist count: " + thair3.hplist.Count);
-								for (int n = 0; n < thair3.hplist.Count; n += 2)
+								THp thp = thair3.hplist[n];
+								GameObject gameObject2 = GameObject.CreatePrimitive(0);
+								gameObject2.name = "__dummy_hitsphere_view";
+								gameObject2.transform.position = thp.t.position;
+								gameObject2.transform.localScale = Vector3.one * (float)(n + 1) * 0.01f;
+								gameObject2.GetComponent<Renderer>().sharedMaterial = array2[n % 5];
+								float sqrMagnitude = (root_oya.position - thp.t.position).sqrMagnitude;
+								if (num2 < sqrMagnitude)
 								{
-									THp thp = thair3.hplist[n];
-									GameObject gameObject2 = GameObject.CreatePrimitive(0);
-									gameObject2.name = "__dummy_hitsphere_view";
-									gameObject2.transform.position = thp.t.position;
-									gameObject2.transform.localScale = Vector3.one * (float)(n + 1) * 0.01f;
-									gameObject2.GetComponent<Renderer>().sharedMaterial = array2[n % 5];
-									float sqrMagnitude = (root_oya.position - thp.t.position).sqrMagnitude;
-									if (num2 < sqrMagnitude)
-									{
-										num2 = sqrMagnitude;
-									}
-									list2.Add(thp.t);
+									num2 = sqrMagnitude;
 								}
-								if (thair3.hplist.Count >= 9)
-								{
-									THp thp2 = thair3.hplist[2];
-									THp thp3 = thair3.hplist[4];
-									THp thp4 = thair3.hplist[6];
-									THp thp5 = thair3.hplist[8];
-									float num3 = (thp4.t.position - thp2.t.position).magnitude / 2f;
-									THitSphere thitSphere = new THitSphere
-									{
-										len = num3,
-										lenxlen = num3 * num3,
-										len_ = num3,
-										lenxlen_ = num3 * num3,
-										name = "__Skirt",
-										pname = thp3.t_oya.name,
-										t = thp3.t
-									};
-									list3.Add(thitSphere);
-									THitSphere thitSphere2 = new THitSphere
-									{
-										len = num3,
-										lenxlen = num3 * num3,
-										len_ = num3,
-										lenxlen_ = num3 * num3,
-										name = "__Skirt",
-										pname = thp5.t_oya.name,
-										t = thp5.t
-									};
-									list3.Add(thitSphere2);
-								}
+								list2.Add(thp.t);
 							}
-							foreach (TBodySkin tbodySkin3 in tbody.goSlot)
+							if (thair3.hplist.Count >= 9)
 							{
-								if (tbodySkin3.Category.StartsWith("hair"))
+								THp thp2 = thair3.hplist[2];
+								THp thp3 = thair3.hplist[4];
+								THp thp4 = thair3.hplist[6];
+								THp thp5 = thair3.hplist[8];
+								float num3 = (thp4.t.position - thp2.t.position).magnitude / 2f;
+								THitSphere thitSphere = new THitSphere
 								{
-									TBodyHit bodyhit = tbodySkin3.bonehair.bodyhit;
-									for (int num4 = bodyhit.spherelist.Count - 1; num4 >= 0; num4--)
+									len = num3,
+									lenxlen = num3 * num3,
+									len_ = num3,
+									lenxlen_ = num3 * num3,
+									name = "__Skirt",
+									pname = thp3.t_oya.name,
+									t = thp3.t
+								};
+								list3.Add(thitSphere);
+								THitSphere thitSphere2 = new THitSphere
+								{
+									len = num3,
+									lenxlen = num3 * num3,
+									len_ = num3,
+									lenxlen_ = num3 * num3,
+									name = "__Skirt",
+									pname = thp5.t_oya.name,
+									t = thp5.t
+								};
+								list3.Add(thitSphere2);
+							}
+						}
+						foreach (TBodySkin tbodySkin3 in tbody.goSlot)
+						{
+							if (tbodySkin3.Category.StartsWith("hair"))
+							{
+								TBodyHit bodyhit = tbodySkin3.bonehair.bodyhit;
+								for (int num4 = bodyhit.spherelist.Count - 1; num4 >= 0; num4--)
+								{
+									if (bodyhit.spherelist[num4].name.StartsWith("__Skirt"))
 									{
-										if (bodyhit.spherelist[num4].name.StartsWith("__Skirt"))
-										{
-											bodyhit.spherelist.Remove(bodyhit.spherelist[num4]);
-										}
+										bodyhit.spherelist.Remove(bodyhit.spherelist[num4]);
 									}
 								}
 							}
 						}
 					}
 				}
-				streamWriter.WriteLine("Skirt transform count: " + num);
 			}
+			streamWriter.WriteLine("Skirt transform count: " + num);
 		}
 
 		public bool IsIKMarkerEnabled()
@@ -816,71 +814,69 @@ namespace CM3D2.GripMovePlugin.Plugin
 			material2.SetColor("_Color", green);
 			int num = 0;
 			int num2 = 0;
-			using (StreamWriter streamWriter = File.CreateText("__bodyhit.log"))
+			using StreamWriter streamWriter = File.CreateText("__bodyhit.log");
+			foreach (TBody tbody in array)
 			{
-				foreach (TBody tbody in array)
+				if (tbody.isActiveAndEnabled)
 				{
-					if (tbody.isActiveAndEnabled)
+					streamWriter.WriteLine(string.Format("----{0}----", tbody.maid.name));
+					Transform transform = CMT.SearchObjName(tbody.transform, "Bip01 Head", true);
+					CMT.SearchObjName(tbody.transform, "Bip01 Spine1a", true);
+					CMT.SearchObjName(tbody.transform, "Bip01 Spine0a", true);
+					CMT.SearchObjName(tbody.transform, "Bip01 Neck", true);
+					CMT.SearchObjName(tbody.transform, "Bip01 L Clavicle_SCL_", true);
+					Transform transform2 = CMT.SearchObjName(tbody.transform, "Bip01 Spine0a_SCL_", true);
+					CMT.SearchObjName(tbody.transform, "Bip01 Pelvis", true);
+					Transform transform3 = CMT.SearchObjName(tbody.transform, "Bip01 Pelvis_SCL_", true);
+					Transform transform4 = CMT.SearchObjName(tbody.transform, "Bip01 Spine1a_SCL_", true);
+					float x = transform.localScale.x;
+					float x2 = transform4.localScale.x;
+					float x3 = transform2.localScale.x;
+					float x4 = transform3.localScale.x;
+					streamWriter.WriteLine(string.Format("Head: {0}", x));
+					streamWriter.WriteLine(string.Format("Kata: {0}", x2));
+					streamWriter.WriteLine(string.Format("Mid:  {0}", x3));
+					streamWriter.WriteLine(string.Format("Koshi:{0}", x4));
+					foreach (TBodySkin tbodySkin in tbody.goSlot)
 					{
-						streamWriter.WriteLine(string.Format("----{0}----", tbody.maid.name));
-						Transform transform = CMT.SearchObjName(tbody.transform, "Bip01 Head", true);
-						CMT.SearchObjName(tbody.transform, "Bip01 Spine1a", true);
-						CMT.SearchObjName(tbody.transform, "Bip01 Spine0a", true);
-						CMT.SearchObjName(tbody.transform, "Bip01 Neck", true);
-						CMT.SearchObjName(tbody.transform, "Bip01 L Clavicle_SCL_", true);
-						Transform transform2 = CMT.SearchObjName(tbody.transform, "Bip01 Spine0a_SCL_", true);
-						CMT.SearchObjName(tbody.transform, "Bip01 Pelvis", true);
-						Transform transform3 = CMT.SearchObjName(tbody.transform, "Bip01 Pelvis_SCL_", true);
-						Transform transform4 = CMT.SearchObjName(tbody.transform, "Bip01 Spine1a_SCL_", true);
-						float x = transform.localScale.x;
-						float x2 = transform4.localScale.x;
-						float x3 = transform2.localScale.x;
-						float x4 = transform3.localScale.x;
-						streamWriter.WriteLine(string.Format("Head: {0}", x));
-						streamWriter.WriteLine(string.Format("Kata: {0}", x2));
-						streamWriter.WriteLine(string.Format("Mid:  {0}", x3));
-						streamWriter.WriteLine(string.Format("Koshi:{0}", x4));
-						foreach (TBodySkin tbodySkin in tbody.goSlot)
+						if (type == null || tbodySkin.Category.StartsWith(type))
 						{
-							if (type == null || tbodySkin.Category.StartsWith(type))
+							num++;
+							streamWriter.WriteLine(string.Format("=== Skin: {0}, category: {1}===", tbodySkin.m_strModelFileName, tbodySkin.Category));
+							foreach (THitSphere thitSphere in tbodySkin.bonehair.bodyhit.spherelist)
 							{
-								num++;
-								streamWriter.WriteLine(string.Format("=== Skin: {0}, category: {1}===", tbodySkin.m_strModelFileName, tbodySkin.Category));
-								foreach (THitSphere thitSphere in tbodySkin.bonehair.bodyhit.spherelist)
+								num2++;
+								string text = "";
+								if (thitSphere.tPtr != null)
 								{
-									num2++;
-									string text = "";
-									if (thitSphere.tPtr != null)
-									{
-										text = thitSphere.tPtr.name;
-									}
-									object[] array3 = new object[6];
-									array3[0] = thitSphere.name;
-									array3[1] = thitSphere.pname;
-									array3[2] = text;
-									object[] array4 = array3;
-									array4[3] = thitSphere.t.position.ToString();
-									array4[4] = thitSphere.len;
-									array4[5] = thitSphere.t.parent.lossyScale.x;
-									Console.WriteLine(string.Format("Sphere: {0}, {1}, {2}, {3}, {4}, {5}", array4));
-									object[] array5 = new object[6];
-									array5[0] = thitSphere.name;
-									array5[1] = thitSphere.pname;
-									array5[2] = text;
-									object[] array6 = array5;
-									array6[3] = thitSphere.t.position.ToString();
-									array6[4] = thitSphere.len;
-									array6[5] = thitSphere.t.parent.lossyScale.x;
-									streamWriter.WriteLine(string.Format("Sphere: {0}, {1}, {2}, {3}, {4}, {5}", array6));
-									GameObject gameObject = GameObject.CreatePrimitive(0);
-									gameObject.name = "__dummy_hitsphere_view";
-									gameObject.transform.position = thitSphere.t.position;
-									gameObject.transform.localScale = Vector3.one * thitSphere.len * (1f + _TS.TestVal2 * 2f);
-									gameObject.GetComponent<Renderer>().sharedMaterial = material;
-									if (thitSphere.name.StartsWith("_CH"))
-									{
-										gameObject.GetComponent<Renderer>().sharedMaterial = material2;
-									}
+									text = thitSphere.tPtr.name;
+								}
+								object[] array3 = new object[6];
+								array3[0] = thitSphere.name;
+								array3[1] = thitSphere.pname;
+								array3[2] = text;
+								object[] array4 = array3;
+								array4[3] = thitSphere.t.position.ToString();
+								array4[4] = thitSphere.len;
+								array4[5] = thitSphere.t.parent.lossyScale.x;
+								Console.WriteLine(string.Format("Sphere: {0}, {1}, {2}, {3}, {4}, {5}", array4));
+								object[] array5 = new object[6];
+								array5[0] = thitSphere.name;
+								array5[1] = thitSphere.pname;
+								array5[2] = text;
+								object[] array6 = array5;
+								array6[3] = thitSphere.t.position.ToString();
+								array6[4] = thitSphere.len;
+								array6[5] = thitSphere.t.parent.lossyScale.x;
+								streamWriter.WriteLine(string.Format("Sphere: {0}, {1}, {2}, {3}, {4}, {5}", array6));
+								GameObject gameObject = GameObject.CreatePrimitive(0);
+								gameObject.name = "__dummy_hitsphere_view";
+								gameObject.transform.position = thitSphere.t.position;
+								gameObject.transform.localScale = Vector3.one * thitSphere.len * (1f + _TS.TestVal2 * 2f);
+								gameObject.GetComponent<Renderer>().sharedMaterial = material;
+								if (thitSphere.name.StartsWith("_CH"))
+								{
+									gameObject.GetComponent<Renderer>().sharedMaterial = material2;
 								}
 							}
 						}

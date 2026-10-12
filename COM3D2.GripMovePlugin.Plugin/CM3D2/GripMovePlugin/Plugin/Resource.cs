@@ -31,16 +31,14 @@ namespace CM3D2.GripMovePlugin.Plugin
 
 		private static byte[] Load(string name)
 		{
-			using (Stream manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
+			using Stream manifestResourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
+			if (manifestResourceStream == null)
 			{
-				if (manifestResourceStream == null)
-				{
-					return null;
-				}
-				byte[] array = new byte[manifestResourceStream.Length];
-				manifestResourceStream.Read(array, 0, array.Length);
-				return array;
+				return null;
 			}
+			byte[] array = new byte[manifestResourceStream.Length];
+			manifestResourceStream.Read(array, 0, array.Length);
+			return array;
 		}
 	}
 }

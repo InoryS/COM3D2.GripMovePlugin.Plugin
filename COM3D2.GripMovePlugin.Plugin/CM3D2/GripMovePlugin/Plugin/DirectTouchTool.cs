@@ -395,52 +395,47 @@ namespace CM3D2.GripMovePlugin.Plugin
 				if (component != null)
 				{
 					Console.WriteLine(component.touchAreas.Count);
-					using (List<TouchArea>.Enumerator enumerator = component.touchAreas.GetEnumerator())
+					foreach (TouchArea touchArea in component.touchAreas)
 					{
-						while (enumerator.MoveNext())
+						if (touchArea.base_t != null)
 						{
-							TouchArea touchArea = enumerator.Current;
-							if (touchArea.base_t != null)
+							string text = "__dummy_hitsphere_view_" + touchArea.name;
+							Transform transform = CMT.SearchObjName(touchArea.base_t, text, true);
+							if (show)
 							{
-								string text = "__dummy_hitsphere_view_" + touchArea.name;
-								Transform transform = CMT.SearchObjName(touchArea.base_t, text, true);
-								if (show)
+								if (transform == null)
 								{
-									if (transform == null)
+									Vector3 vector = touchArea.base_t.TransformDirection(touchArea.position) * touchArea.pos_len;
+									vector += touchArea.base_t.position;
+									GameObject gameObject = GameObject.CreatePrimitive(0);
+									Console.WriteLine(touchArea.areaName);
+									Console.WriteLine(vector);
+									Console.WriteLine(touchArea.len);
+									gameObject.name = text;
+									Renderer component2 = gameObject.GetComponent<Renderer>();
+									gameObject.transform.localScale = Vector3.one * touchArea.len * 2f;
+									gameObject.transform.parent = touchArea.base_t;
+									gameObject.transform.position = vector;
+									gameObject.transform.rotation = touchArea.base_t.rotation;
+									if (touchArea.areaName != MaidTouchAreaName.CUSTOM)
 									{
-										Vector3 vector = touchArea.base_t.TransformDirection(touchArea.position) * touchArea.pos_len;
-										vector += touchArea.base_t.position;
-										GameObject gameObject = GameObject.CreatePrimitive(0);
-										Console.WriteLine(touchArea.areaName);
-										Console.WriteLine(vector);
-										Console.WriteLine(touchArea.len);
-										gameObject.name = text;
-										Renderer component2 = gameObject.GetComponent<Renderer>();
-										gameObject.transform.localScale = Vector3.one * touchArea.len * 2f;
-										gameObject.transform.parent = touchArea.base_t;
-										gameObject.transform.position = vector;
-										gameObject.transform.rotation = touchArea.base_t.rotation;
-										if (touchArea.areaName != MaidTouchAreaName.CUSTOM)
-										{
-											component2.sharedMaterial = this._markerMaterial;
-										}
-										else
-										{
-											component2.sharedMaterial = this._markerCustomMaterial;
-										}
+										component2.sharedMaterial = this._markerMaterial;
+									}
+									else
+									{
+										component2.sharedMaterial = this._markerCustomMaterial;
 									}
 								}
-								else if (transform != null)
-								{
-									UnityEngine.Object.Destroy(transform.gameObject);
-								}
 							}
-							else
+							else if (transform != null)
 							{
-								Console.WriteLine("base_t is null: " + touchArea.name);
+								UnityEngine.Object.Destroy(transform.gameObject);
 							}
 						}
-						goto IL_022D;
+						else
+						{
+							Console.WriteLine("base_t is null: " + touchArea.name);
+						}
 					}
 				}
 				IL_022D:
@@ -483,14 +478,11 @@ namespace CM3D2.GripMovePlugin.Plugin
 					if (directTouchMaid != null && directTouchMaid.maid != null && directTouchMaid.maid.Visible)
 					{
 						bool flag = false;
-						using (List<TouchArea>.Enumerator enumerator2 = directTouchMaid.touchAreas.GetEnumerator())
+						foreach (TouchArea touchArea in directTouchMaid.touchAreas)
 						{
-							while (enumerator2.MoveNext())
+							if (touchArea.base_t == null)
 							{
-								if (enumerator2.Current.base_t == null)
-								{
-									flag = true;
-								}
+								flag = true;
 							}
 						}
 						if (!flag)

@@ -2,16 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>net35</TargetFramework>
-    <AssemblyName>COM3D2.GripMovePlugin.Plugin</AssemblyName>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
-    <RestoreAdditionalProjectSources>
-      https://api.nuget.org/v3/index.json;
-      https://nuget.bepinex.dev/v3/index.json;
-      https://nuget.samboy.dev/v3/index.json
-    </RestoreAdditionalProjectSources>
+    <AssemblyName>COM3D2.GripMovePlugin.Plugin</AssemblyName>
     <RootNamespace>COM3D2.GripMovePlugin.Plugin</RootNamespace>
-    
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Version>0.8.9.4</Version>
     <AssemblyTitle>GripMovePlugin</AssemblyTitle>
     <Product>GripMovePlugin</Product>
@@ -20,11 +21,19 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="COM3D2.GameLibs" Version="2.43.1-r.0"/>
     <PackageReference Include="UnityEngine.Modules" Version="5.6.4" IncludeAssets="compile"/>
   </ItemGroup>
-  
+
   <ItemGroup>
     <Reference Include="UnityInjector">
       <HintPath>..\libs\UnityInjector.dll</HintPath>
@@ -33,7 +42,8 @@
       <HintPath>..\libs\ExIni.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
+
+
   <ItemGroup>
     <EmbeddedResource Include="CM3D2\GripMovePlugin\Plugin\Resources\gripmovepluginshaders.bin">
       <LogicalName>CM3D2.GripMovePlugin.Plugin.Resources.gripmovepluginshaders.bin</LogicalName>
@@ -42,8 +52,9 @@
       <LogicalName>CM3D2.GripMovePlugin.Plugin.Resources.mouse_cursor.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  
+
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all"/>
   </ItemGroup>
+
 </Project>

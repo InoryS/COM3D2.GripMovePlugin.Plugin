@@ -88,12 +88,10 @@ namespace CM3D2.GripMovePlugin.Plugin
 
 		public static void ExportToCollada(string path, Transform root)
 		{
-			using (StreamWriter streamWriter = File.CreateText(path))
-			{
-				streamWriter.Write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<COLLADA version=\"1.5.0\" xmlns=\"http://www.collada.org/2008/03/COLLADASchema\">\r\n\t<asset>\r\n\t\t<contributor>\r\n\t\t\t<authoring_tool>mdlanim</authoring_tool>\r\n\t\t</contributor>\r\n\t\t<created>2015-03-05T22:34:03Z</created>\r\n\t\t<modified>2015-03-05T22:34:03Z</modified>\r\n\t\t<unit />\r\n\t\t<up_axis>Y_UP</up_axis>\r\n\t</asset>\r\n\t<library_visual_scenes>\r\n\t\t<visual_scene id=\"RootNode\" name=\"RootNode\">");
-				DebugHelper.WriteNode(streamWriter, root);
-				streamWriter.Write("\r\n        </visual_scene>\r\n\t</library_visual_scenes>\r\n\t<scene>\r\n\t\t<instance_visual_scene url=\"#RootNode\" />\r\n\t</scene>\r\n</COLLADA>");
-			}
+			using StreamWriter streamWriter = File.CreateText(path);
+			streamWriter.Write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<COLLADA version=\"1.5.0\" xmlns=\"http://www.collada.org/2008/03/COLLADASchema\">\r\n\t<asset>\r\n\t\t<contributor>\r\n\t\t\t<authoring_tool>mdlanim</authoring_tool>\r\n\t\t</contributor>\r\n\t\t<created>2015-03-05T22:34:03Z</created>\r\n\t\t<modified>2015-03-05T22:34:03Z</modified>\r\n\t\t<unit />\r\n\t\t<up_axis>Y_UP</up_axis>\r\n\t</asset>\r\n\t<library_visual_scenes>\r\n\t\t<visual_scene id=\"RootNode\" name=\"RootNode\">");
+			DebugHelper.WriteNode(streamWriter, root);
+			streamWriter.Write("\r\n        </visual_scene>\r\n\t</library_visual_scenes>\r\n\t<scene>\r\n\t\t<instance_visual_scene url=\"#RootNode\" />\r\n\t</scene>\r\n</COLLADA>");
 		}
 
 		public static string[] GetLayerNames(int mask)
