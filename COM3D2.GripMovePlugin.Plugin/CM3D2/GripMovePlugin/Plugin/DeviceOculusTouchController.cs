@@ -6,11 +6,8 @@ using Valve.VR;
 
 namespace CM3D2.GripMovePlugin.Plugin
 {
-	// Token: 0x0200003C RID: 60
 	public class DeviceOculusTouchController : DeviceWrapper
 	{
-		// Token: 0x17000038 RID: 56
-		// (get) Token: 0x0600020E RID: 526 RVA: 0x0000E08C File Offset: 0x0000C28C
 		public override Vector3 angularVelocity
 		{
 			get
@@ -19,18 +16,14 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x17000039 RID: 57
-		// (get) Token: 0x0600020F RID: 527 RVA: 0x00003826 File Offset: 0x00001A26
 		public override bool connected
 		{
 			get
 			{
-				return (OVRInput.GetConnectedControllers() & this.controller) > OVRInput.Controller.None;
+				return (OVRInput.GetConnectedControllers() & this.controller) > 0;
 			}
 		}
 
-		// Token: 0x1700003A RID: 58
-		// (get) Token: 0x06000210 RID: 528 RVA: 0x00003837 File Offset: 0x00001A37
 		public override bool hasTracking
 		{
 			get
@@ -39,8 +32,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x1700003B RID: 59
-		// (get) Token: 0x06000211 RID: 529 RVA: 0x00002821 File Offset: 0x00000A21
 		public override bool outOfRange
 		{
 			get
@@ -49,8 +40,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x1700003C RID: 60
-		// (get) Token: 0x06000212 RID: 530 RVA: 0x0000281E File Offset: 0x00000A1E
 		public override bool valid
 		{
 			get
@@ -59,8 +48,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x1700003D RID: 61
-		// (get) Token: 0x06000213 RID: 531 RVA: 0x0000383F File Offset: 0x00001A3F
 		public override Vector3 velocity
 		{
 			get
@@ -69,13 +56,11 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000215 RID: 533 RVA: 0x0000384C File Offset: 0x00001A4C
-		public override Vector2 GetAxis(EVRButtonId buttonId = EVRButtonId.k_EButton_Axis0)
+		public override Vector2 GetAxis(EVRButtonId buttonId = (EVRButtonId)32)
 		{
-			return OVRInput.Get(this.MapAxis2D(buttonId), OVRInput.Controller.Active);
+			return OVRInput.Get(this.MapAxis2D(buttonId), (OVRInput.Controller)int.MinValue);
 		}
 
-		// Token: 0x06000216 RID: 534 RVA: 0x0000E2B0 File Offset: 0x0000C4B0
 		public static DeviceWrapper GetOrCreate(GameObject go, OVRInput.Controller ovrController)
 		{
 			DeviceOculusTouchController deviceOculusTouchController = go.GetComponent<DeviceOculusTouchController>();
@@ -87,126 +72,110 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return deviceOculusTouchController;
 		}
 
-		// Token: 0x06000217 RID: 535 RVA: 0x0000385F File Offset: 0x00001A5F
 		public override bool GetPress(EVRButtonId buttonId)
 		{
 			return OVRInput.Get(this.MapPressButtonId(buttonId), this.controller);
 		}
 
-		// Token: 0x06000218 RID: 536 RVA: 0x00003873 File Offset: 0x00001A73
 		public override bool GetPress(ulong buttonMask)
 		{
 			return OVRInput.Get(this.MapPressButtonMask(buttonMask), this.controller);
 		}
 
-		// Token: 0x06000219 RID: 537 RVA: 0x00003887 File Offset: 0x00001A87
 		public override bool GetPressDown(ulong buttonMask)
 		{
 			return OVRInput.GetDown(this.MapPressButtonMask(buttonMask), this.controller);
 		}
 
-		// Token: 0x0600021A RID: 538 RVA: 0x0000389B File Offset: 0x00001A9B
 		public override bool GetPressDown(EVRButtonId buttonId)
 		{
 			return OVRInput.GetDown(this.MapPressButtonId(buttonId), this.controller);
 		}
 
-		// Token: 0x0600021B RID: 539 RVA: 0x000038AF File Offset: 0x00001AAF
 		public override bool GetPressUp(ulong buttonMask)
 		{
 			return OVRInput.GetUp(this.MapPressButtonMask(buttonMask), this.controller);
 		}
 
-		// Token: 0x0600021C RID: 540 RVA: 0x000038C3 File Offset: 0x00001AC3
 		public override bool GetPressUp(EVRButtonId buttonId)
 		{
 			return OVRInput.GetUp(this.MapPressButtonId(buttonId), this.controller);
 		}
 
-		// Token: 0x0600021D RID: 541 RVA: 0x000038D7 File Offset: 0x00001AD7
 		public override bool GetTouch(ulong buttonMask)
 		{
 			return OVRInput.Get(this.MapTouchButtonMask(buttonMask), this.controller);
 		}
 
-		// Token: 0x0600021E RID: 542 RVA: 0x000038EB File Offset: 0x00001AEB
 		public override bool GetTouch(EVRButtonId buttonId)
 		{
 			return OVRInput.Get(this.MapTouchButtonId(buttonId), this.controller);
 		}
 
-		// Token: 0x0600021F RID: 543 RVA: 0x000038FF File Offset: 0x00001AFF
 		public override bool GetTouchDown(ulong buttonMask)
 		{
 			return OVRInput.GetDown(this.MapTouchButtonMask(buttonMask), this.controller);
 		}
 
-		// Token: 0x06000220 RID: 544 RVA: 0x00003913 File Offset: 0x00001B13
 		public override bool GetTouchDown(EVRButtonId buttonId)
 		{
 			return OVRInput.GetDown(this.MapTouchButtonId(buttonId), this.controller);
 		}
 
-		// Token: 0x06000221 RID: 545 RVA: 0x00003927 File Offset: 0x00001B27
 		public override bool GetTouchUp(EVRButtonId buttonId)
 		{
 			return OVRInput.GetUp(this.MapTouchButtonId(buttonId), this.controller);
 		}
 
-		// Token: 0x06000222 RID: 546 RVA: 0x0000393B File Offset: 0x00001B3B
 		public override bool GetTouchUp(ulong buttonMask)
 		{
 			return OVRInput.GetUp(this.MapTouchButtonMask(buttonMask), this.controller);
 		}
 
-		// Token: 0x06000223 RID: 547 RVA: 0x0000E2DC File Offset: 0x0000C4DC
 		public void Init(OVRInput.Controller rawController)
 		{
-			this.controller = OVRInput.Controller.Touch;
-			if (rawController == OVRInput.Controller.LTouch)
+			this.controller = (OVRInput.Controller)3;
+			if (rawController == (OVRInput.Controller)1)
 			{
-				this.rawController = OVRInput.Controller.LTouch;
+				this.rawController = (OVRInput.Controller)1;
 				this.rawButtonMap = this.rawButtonMap_L;
 				this.rawTouchMap = this.rawTouchMap_L;
 				this.buttonMap = this.buttonMap_L;
 				this.touchMap = this.touchMap_L;
 				return;
 			}
-			this.rawController = OVRInput.Controller.RTouch;
+			this.rawController = (OVRInput.Controller)2;
 			this.rawButtonMap = this.rawButtonMap_R;
 			this.rawTouchMap = this.rawTouchMap_R;
 			this.buttonMap = this.buttonMap_R;
 			this.touchMap = this.touchMap_R;
 		}
 
-		// Token: 0x06000224 RID: 548 RVA: 0x0000394F File Offset: 0x00001B4F
 		private OVRInput.RawAxis2D MapAxis2D(EVRButtonId buttonId)
 		{
-			if (this.rawController == OVRInput.Controller.LTouch)
+			if (this.rawController == (OVRInput.Controller)1)
 			{
-				return OVRInput.RawAxis2D.LThumbstick;
+				return (OVRInput.RawAxis2D)1;
 			}
-			if (this.rawController == OVRInput.Controller.RTouch)
+			if (this.rawController == (OVRInput.Controller)2)
 			{
-				return OVRInput.RawAxis2D.RThumbstick;
+				return (OVRInput.RawAxis2D)2;
 			}
-			return OVRInput.RawAxis2D.Any;
+			return (OVRInput.RawAxis2D)(-1);
 		}
 
-		// Token: 0x06000225 RID: 549 RVA: 0x00003968 File Offset: 0x00001B68
 		private OVRInput.Button MapPressButtonId(EVRButtonId buttonId)
 		{
 			if (!this.buttonMap.ContainsKey(buttonId))
 			{
-				return OVRInput.Button.None;
+				return 0;
 			}
 			return this.buttonMap[buttonId];
 		}
 
-		// Token: 0x06000226 RID: 550 RVA: 0x0000E364 File Offset: 0x0000C564
 		private OVRInput.Button MapPressButtonMask(ulong buttonMask)
 		{
-			OVRInput.Button button = OVRInput.Button.None;
+			OVRInput.Button button = 0;
 			foreach (ulong num in this.steamVRButtonMaskMap.Keys)
 			{
 				if ((buttonMask & num) == num && this.buttonMap.ContainsKey(this.steamVRButtonMaskMap[num]))
@@ -217,20 +186,18 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return button;
 		}
 
-		// Token: 0x06000227 RID: 551 RVA: 0x00003986 File Offset: 0x00001B86
 		private OVRInput.Touch MapTouchButtonId(EVRButtonId buttonId)
 		{
 			if (!this.touchMap.ContainsKey(buttonId))
 			{
-				return OVRInput.Touch.None;
+				return 0;
 			}
 			return this.touchMap[buttonId];
 		}
 
-		// Token: 0x06000228 RID: 552 RVA: 0x0000E3F4 File Offset: 0x0000C5F4
 		private OVRInput.Touch MapTouchButtonMask(ulong buttonMask)
 		{
-			OVRInput.Touch touch = OVRInput.Touch.None;
+			OVRInput.Touch touch = 0;
 			foreach (ulong num in this.steamVRButtonMaskMap.Keys)
 			{
 				if ((buttonMask & num) == num && this.touchMap.ContainsKey(this.steamVRButtonMaskMap[num]))
@@ -241,20 +208,18 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return touch;
 		}
 
-		// Token: 0x06000229 RID: 553 RVA: 0x000039A4 File Offset: 0x00001BA4
 		private OVRInput.RawButton RawMapPressButtonId(EVRButtonId buttonId)
 		{
 			if (!this.rawButtonMap.ContainsKey(buttonId))
 			{
-				return OVRInput.RawButton.None;
+				return 0;
 			}
 			return this.rawButtonMap[buttonId];
 		}
 
-		// Token: 0x0600022A RID: 554 RVA: 0x0000E484 File Offset: 0x0000C684
 		private OVRInput.RawButton RawMapPressButtonMask(ulong buttonMask)
 		{
-			OVRInput.RawButton rawButton = OVRInput.RawButton.None;
+			OVRInput.RawButton rawButton = 0;
 			foreach (ulong num in this.steamVRButtonMaskMap.Keys)
 			{
 				if ((buttonMask & num) == num && this.rawButtonMap.ContainsKey(this.steamVRButtonMaskMap[num]))
@@ -265,20 +230,18 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return rawButton;
 		}
 
-		// Token: 0x0600022B RID: 555 RVA: 0x000039C2 File Offset: 0x00001BC2
 		private OVRInput.RawTouch RawMapTouchButtonId(EVRButtonId buttonId)
 		{
 			if (!this.rawTouchMap.ContainsKey(buttonId))
 			{
-				return OVRInput.RawTouch.None;
+				return 0;
 			}
 			return this.rawTouchMap[buttonId];
 		}
 
-		// Token: 0x0600022C RID: 556 RVA: 0x0000E514 File Offset: 0x0000C714
 		private OVRInput.RawTouch RawMapTouchButtonMask(ulong buttonMask)
 		{
-			OVRInput.RawTouch rawTouch = OVRInput.RawTouch.None;
+			OVRInput.RawTouch rawTouch = 0;
 			foreach (ulong num in this.steamVRButtonMaskMap.Keys)
 			{
 				if ((buttonMask & num) == num && this.rawTouchMap.ContainsKey(this.steamVRButtonMaskMap[num]))
@@ -289,7 +252,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return rawTouch;
 		}
 
-		// Token: 0x0600022D RID: 557 RVA: 0x000039E0 File Offset: 0x00001BE0
 		private IEnumerator StopHapticCo()
 		{
 			yield return new WaitForEndOfFrame();
@@ -300,8 +262,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 			yield break;
 		}
 
-		// Token: 0x0600022E RID: 558 RVA: 0x0000E5A4 File Offset: 0x0000C7A4
-		public override void TriggerHapticPulse(ushort durationMicroSec = 500, EVRButtonId buttonId = EVRButtonId.k_EButton_Axis0)
+		public override void TriggerHapticPulse(ushort durationMicroSec = 500, EVRButtonId buttonId = (EVRButtonId)32)
 		{
 			OVRInput.SetControllerVibration(0.3f, 0.8f, this.rawController);
 			float num = (float)(durationMicroSec / 1000) / 1000f;
@@ -310,206 +271,88 @@ namespace CM3D2.GripMovePlugin.Plugin
 			base.StartCoroutine(this.StopHapticCo());
 		}
 
-		// Token: 0x04000175 RID: 373
 		private OVRInput.Controller controller;
 
-		// Token: 0x04000176 RID: 374
 		private OVRInput.Controller rawController;
 
-		// Token: 0x04000177 RID: 375
 		private Dictionary<EVRButtonId, OVRInput.RawButton> rawButtonMap;
 
-		// Token: 0x04000178 RID: 376
 		private Dictionary<EVRButtonId, OVRInput.Button> buttonMap;
 
-		// Token: 0x04000179 RID: 377
 		private Dictionary<EVRButtonId, OVRInput.RawTouch> rawTouchMap;
 
-		// Token: 0x0400017A RID: 378
 		private Dictionary<EVRButtonId, OVRInput.Touch> touchMap;
 
-		// Token: 0x0400017B RID: 379
 		private float hapticEnd;
 
-		// Token: 0x0400017C RID: 380
 		private Dictionary<ulong, EVRButtonId> steamVRButtonMaskMap = new Dictionary<ulong, EVRButtonId>
 		{
-			{
-				1UL,
-				EVRButtonId.k_EButton_System
-			},
-			{
-				2UL,
-				EVRButtonId.k_EButton_ApplicationMenu
-			},
-			{
-				4UL,
-				EVRButtonId.k_EButton_Grip
-			},
-			{
-				4294967296UL,
-				EVRButtonId.k_EButton_Axis0
-			},
-			{
-				8589934592UL,
-				EVRButtonId.k_EButton_Axis1
-			},
-			{
-				17179869184UL,
-				EVRButtonId.k_EButton_Axis2
-			},
-			{
-				34359738368UL,
-				EVRButtonId.k_EButton_Axis3
-			},
-			{
-				68719476736UL,
-				EVRButtonId.k_EButton_Axis4
-			}
+			{ 1UL, (EVRButtonId)0 },
+			{ 2UL, (EVRButtonId)1 },
+			{ 4UL, (EVRButtonId)2 },
+			{ 4294967296UL, (EVRButtonId)32 },
+			{ 8589934592UL, (EVRButtonId)33 },
+			{ 17179869184UL, (EVRButtonId)34 },
+			{ 34359738368UL, (EVRButtonId)35 },
+			{ 68719476736UL, (EVRButtonId)36 }
 		};
 
-		// Token: 0x0400017D RID: 381
 		private Dictionary<EVRButtonId, OVRInput.RawButton> rawButtonMap_L = new Dictionary<EVRButtonId, OVRInput.RawButton>
 		{
-			{
-				EVRButtonId.k_EButton_Axis1,
-				OVRInput.RawButton.LIndexTrigger
-			},
-			{
-				EVRButtonId.k_EButton_Grip,
-				OVRInput.RawButton.LHandTrigger
-			},
-			{
-				EVRButtonId.k_EButton_ApplicationMenu,
-				OVRInput.RawButton.B
-			},
-			{
-				EVRButtonId.k_EButton_System,
-				OVRInput.RawButton.A
-			},
-			{
-				EVRButtonId.k_EButton_Axis0,
-				OVRInput.RawButton.LThumbstick
-			}
+			{ (EVRButtonId)33, (OVRInput.RawButton)268435456 },
+			{ (EVRButtonId)2, (OVRInput.RawButton)536870912 },
+			{ (EVRButtonId)1, (OVRInput.RawButton)2 },
+			{ (EVRButtonId)0, (OVRInput.RawButton)1 },
+			{ (EVRButtonId)32, (OVRInput.RawButton)1024 }
 		};
 
-		// Token: 0x0400017E RID: 382
 		private Dictionary<EVRButtonId, OVRInput.RawButton> rawButtonMap_R = new Dictionary<EVRButtonId, OVRInput.RawButton>
 		{
-			{
-				EVRButtonId.k_EButton_Axis1,
-				OVRInput.RawButton.RIndexTrigger
-			},
-			{
-				EVRButtonId.k_EButton_Grip,
-				OVRInput.RawButton.RHandTrigger
-			},
-			{
-				EVRButtonId.k_EButton_ApplicationMenu,
-				OVRInput.RawButton.Y
-			},
-			{
-				EVRButtonId.k_EButton_System,
-				OVRInput.RawButton.X
-			},
-			{
-				EVRButtonId.k_EButton_Axis0,
-				OVRInput.RawButton.RThumbstick
-			}
+			{ (EVRButtonId)33, (OVRInput.RawButton)67108864 },
+			{ (EVRButtonId)2, (OVRInput.RawButton)134217728 },
+			{ (EVRButtonId)1, (OVRInput.RawButton)512 },
+			{ (EVRButtonId)0, (OVRInput.RawButton)256 },
+			{ (EVRButtonId)32, (OVRInput.RawButton)4 }
 		};
 
-		// Token: 0x0400017F RID: 383
 		private Dictionary<EVRButtonId, OVRInput.Button> buttonMap_L = new Dictionary<EVRButtonId, OVRInput.Button>
 		{
-			{
-				EVRButtonId.k_EButton_Axis1,
-				OVRInput.Button.PrimaryIndexTrigger
-			},
-			{
-				EVRButtonId.k_EButton_Grip,
-				OVRInput.Button.PrimaryHandTrigger
-			},
-			{
-				EVRButtonId.k_EButton_ApplicationMenu,
-				OVRInput.Button.Four
-			},
-			{
-				EVRButtonId.k_EButton_Axis0,
-				OVRInput.Button.Three
-			}
+			{ (EVRButtonId)33, (OVRInput.Button)8192 },
+			{ (EVRButtonId)2, (OVRInput.Button)16384 },
+			{ (EVRButtonId)1, (OVRInput.Button)8 },
+			{ (EVRButtonId)32, (OVRInput.Button)4 }
 		};
 
-		// Token: 0x04000180 RID: 384
 		private Dictionary<EVRButtonId, OVRInput.Button> buttonMap_R = new Dictionary<EVRButtonId, OVRInput.Button>
 		{
-			{
-				EVRButtonId.k_EButton_Axis1,
-				OVRInput.Button.SecondaryIndexTrigger
-			},
-			{
-				EVRButtonId.k_EButton_Grip,
-				OVRInput.Button.SecondaryHandTrigger
-			},
-			{
-				EVRButtonId.k_EButton_ApplicationMenu,
-				OVRInput.Button.Two
-			},
-			{
-				EVRButtonId.k_EButton_Axis0,
-				OVRInput.Button.One
-			}
+			{ (EVRButtonId)33, (OVRInput.Button)2097152 },
+			{ (EVRButtonId)2, (OVRInput.Button)4194304 },
+			{ (EVRButtonId)1, (OVRInput.Button)2 },
+			{ (EVRButtonId)32, (OVRInput.Button)1 }
 		};
 
-		// Token: 0x04000181 RID: 385
 		private Dictionary<EVRButtonId, OVRInput.RawTouch> rawTouchMap_L = new Dictionary<EVRButtonId, OVRInput.RawTouch>
 		{
-			{
-				EVRButtonId.k_EButton_Axis0,
-				OVRInput.RawTouch.X
-			},
-			{
-				EVRButtonId.k_EButton_Axis1,
-				OVRInput.RawTouch.LIndexTrigger
-			}
+			{ (EVRButtonId)32, (OVRInput.RawTouch)256 },
+			{ (EVRButtonId)33, (OVRInput.RawTouch)4096 }
 		};
 
-		// Token: 0x04000182 RID: 386
 		private Dictionary<EVRButtonId, OVRInput.RawTouch> rawTouchMap_R = new Dictionary<EVRButtonId, OVRInput.RawTouch>
 		{
-			{
-				EVRButtonId.k_EButton_Axis0,
-				OVRInput.RawTouch.A
-			},
-			{
-				EVRButtonId.k_EButton_Axis1,
-				OVRInput.RawTouch.RIndexTrigger
-			}
+			{ (EVRButtonId)32, (OVRInput.RawTouch)1 },
+			{ (EVRButtonId)33, (OVRInput.RawTouch)16 }
 		};
 
-		// Token: 0x04000183 RID: 387
 		private Dictionary<EVRButtonId, OVRInput.Touch> touchMap_L = new Dictionary<EVRButtonId, OVRInput.Touch>
 		{
-			{
-				EVRButtonId.k_EButton_Axis0,
-				OVRInput.Touch.Three
-			},
-			{
-				EVRButtonId.k_EButton_Axis1,
-				OVRInput.Touch.PrimaryIndexTrigger
-			}
+			{ (EVRButtonId)32, (OVRInput.Touch)4 },
+			{ (EVRButtonId)33, (OVRInput.Touch)8192 }
 		};
 
-		// Token: 0x04000184 RID: 388
 		private Dictionary<EVRButtonId, OVRInput.Touch> touchMap_R = new Dictionary<EVRButtonId, OVRInput.Touch>
 		{
-			{
-				EVRButtonId.k_EButton_Axis0,
-				OVRInput.Touch.One
-			},
-			{
-				EVRButtonId.k_EButton_Axis1,
-				OVRInput.Touch.SecondaryIndexTrigger
-			}
+			{ (EVRButtonId)32, (OVRInput.Touch)1 },
+			{ (EVRButtonId)33, (OVRInput.Touch)2097152 }
 		};
 	}
 }

@@ -5,11 +5,8 @@ using UnityEngine;
 
 namespace CM3D2.GripMovePlugin.Plugin
 {
-	// Token: 0x0200002E RID: 46
 	public class DirectTouchTool : MonoBehaviour
 	{
-		// Token: 0x1700002E RID: 46
-		// (get) Token: 0x06000179 RID: 377 RVA: 0x00003179 File Offset: 0x00001379
 		public static DirectTouchTool Instance
 		{
 			get
@@ -18,13 +15,12 @@ namespace CM3D2.GripMovePlugin.Plugin
 				{
 					GameObject gameObject = new GameObject("DirectTouchTool");
 					DirectTouchTool._instance = gameObject.AddComponent<DirectTouchTool>();
-					global::UnityEngine.Object.DontDestroyOnLoad(gameObject);
+					UnityEngine.Object.DontDestroyOnLoad(gameObject);
 				}
 				return DirectTouchTool._instance;
 			}
 		}
 
-		// Token: 0x0600017B RID: 379 RVA: 0x00009854 File Offset: 0x00007A54
 		private void ActivateOnMaid(Maid maid)
 		{
 			TBody body = maid.body0;
@@ -61,7 +57,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x0600017C RID: 380 RVA: 0x00009B6C File Offset: 0x00007D6C
 		public void AddCustomMaidTouchArea(string customName, string baseBoneName, Vector3 position, float radius)
 		{
 			CustomMaidTouchArea customMaidTouchArea = new CustomMaidTouchArea
@@ -74,36 +69,33 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.customMaidTouchArea.Add(customMaidTouchArea);
 		}
 
-		// Token: 0x0600017D RID: 381 RVA: 0x000031A7 File Offset: 0x000013A7
 		public void AddOnAfterHitTestHandler(Action<DirectTouchTool> handler)
 		{
 			this.onPostHitTestHandlers.Add(handler);
 		}
 
-		// Token: 0x0600017E RID: 382 RVA: 0x000031B5 File Offset: 0x000013B5
 		public void AddOnHitHandler(Action<DirectTouchController, TouchArea, bool> handler)
 		{
 			this.onHitHandlers.Add(handler);
 		}
 
-		// Token: 0x0600017F RID: 383 RVA: 0x000031C3 File Offset: 0x000013C3
 		public void AddOnStayHandler(Action<DirectTouchController, TouchArea> handler)
 		{
 			this.onStayHandlers.Add(handler);
 		}
 
-		// Token: 0x06000180 RID: 384 RVA: 0x00009BA8 File Offset: 0x00007DA8
 		private void Awake()
 		{
 			this._markerMaterial = new Material(MaterialHelper.GetColorZOrderShader());
-			Color color = new Color(0f, 0f, 1f, 0.5f);
+			Color color;
+			color = new(0f, 0f, 1f, 0.5f);
 			this._markerMaterial.SetColor("_Color", color);
 			this._markerCustomMaterial = new Material(MaterialHelper.GetColorZOrderShader());
-			Color color2 = new Color(0f, 1f, 0f, 0.5f);
+			Color color2;
+			color2 = new(0f, 1f, 0f, 0.5f);
 			this._markerCustomMaterial.SetColor("_Color", color2);
 		}
 
-		// Token: 0x06000181 RID: 385 RVA: 0x00009C30 File Offset: 0x00007E30
 		private void InitTouchSize()
 		{
 			this.touchSize_vagina = Settings.Instance.GetFloatValue("DirectTouchTool_Size_VAGINA", 0.03f);
@@ -120,7 +112,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.touchSize_foot = Settings.Instance.GetFloatValue("DirectTouchTool_Size_FOOT", 0.08f);
 		}
 
-		// Token: 0x06000182 RID: 386 RVA: 0x000031D1 File Offset: 0x000013D1
 		private IEnumerator InstallDirectTouchToMaidCo()
 		{
 			CharacterMgr characterMgr = GameMain.Instance.CharacterMgr;
@@ -130,7 +121,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 				for (int i = 0; i < characterMgr.GetMaidCount(); i++)
 				{
 					Maid maid = characterMgr.GetMaid(i);
-					if (!(maid == null) && !(maid.body0 == null) && !maid.body0.boMAN)
+					if (maid != null && maid.body0 != null && !maid.body0.boMAN)
 					{
 						DirectTouchMaid component = maid.body0.GetComponent<DirectTouchMaid>();
 						if (component != null)
@@ -148,10 +139,8 @@ namespace CM3D2.GripMovePlugin.Plugin
 				}
 				yield return new WaitForSeconds(1f);
 			}
-			yield break;
 		}
 
-		// Token: 0x06000183 RID: 387 RVA: 0x00009D78 File Offset: 0x00007F78
 		private void InstallTouchToOculusTouch()
 		{
 			OVRCameraRig componentInParent = GameMain.Instance.OvrMgr.OvrCamera.gameObject.GetComponentInParent<OVRCameraRig>();
@@ -172,7 +161,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 				}
 				this.controllers.Add(directTouchController);
 			}
-			if (leftHandAnchor != null && (OVRInput.GetConnectedControllers() & OVRInput.Controller.Touch) != OVRInput.Controller.None)
+			if (leftHandAnchor != null && (OVRInput.GetConnectedControllers() & (OVRInput.Controller)3) != 0)
 			{
 				DirectTouchController directTouchController2 = leftHandAnchor.gameObject.GetComponent<DirectTouchController>();
 				if (directTouchController2 == null)
@@ -182,11 +171,11 @@ namespace CM3D2.GripMovePlugin.Plugin
 					directTouchController2.radius = this.handHitRadius;
 					directTouchController2.onHitHandler = new Action<DirectTouchController, TouchArea, bool>(this.OnHit);
 					directTouchController2.onStayHandler = new Action<DirectTouchController, TouchArea>(this.OnStay);
-					directTouchController2.vrdeviceWrapper = DeviceOculusTouchController.GetOrCreate(directTouchController2.gameObject, OVRInput.Controller.LTouch);
+					directTouchController2.vrdeviceWrapper = DeviceOculusTouchController.GetOrCreate(directTouchController2.gameObject, (OVRInput.Controller)1);
 				}
 				this.controllers.Add(directTouchController2);
 			}
-			if (rightHandAnchor != null && (OVRInput.GetConnectedControllers() & OVRInput.Controller.Touch) != OVRInput.Controller.None)
+			if (rightHandAnchor != null && (OVRInput.GetConnectedControllers() & (OVRInput.Controller)3) != 0)
 			{
 				DirectTouchController directTouchController3 = rightHandAnchor.gameObject.GetComponent<DirectTouchController>();
 				if (directTouchController3 == null)
@@ -196,13 +185,12 @@ namespace CM3D2.GripMovePlugin.Plugin
 					directTouchController3.radius = this.handHitRadius;
 					directTouchController3.onHitHandler = new Action<DirectTouchController, TouchArea, bool>(this.OnHit);
 					directTouchController3.onStayHandler = new Action<DirectTouchController, TouchArea>(this.OnStay);
-					directTouchController3.vrdeviceWrapper = DeviceOculusTouchController.GetOrCreate(directTouchController3.gameObject, OVRInput.Controller.RTouch);
+					directTouchController3.vrdeviceWrapper = DeviceOculusTouchController.GetOrCreate(directTouchController3.gameObject, (OVRInput.Controller)2);
 				}
 				this.controllers.Add(directTouchController3);
 			}
 		}
 
-		// Token: 0x06000184 RID: 388 RVA: 0x00009F5C File Offset: 0x0000815C
 		private void InstallTouchToViveControllers()
 		{
 			if (GameMain.Instance.OvrMgr.ovr_obj != null)
@@ -261,21 +249,19 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000185 RID: 389 RVA: 0x000031E0 File Offset: 0x000013E0
 		private void InstallTouchToVRControllers()
 		{
-			if (GameMain.Instance.VRFamily == GameMain.VRFamilyType.HTC)
+			if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)2)
 			{
 				this.InstallTouchToViveControllers();
 				return;
 			}
-			if (GameMain.Instance.VRFamily == GameMain.VRFamilyType.Oculus)
+			if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)1)
 			{
 				this.InstallTouchToOculusTouch();
 			}
 		}
 
-		// Token: 0x06000186 RID: 390 RVA: 0x0000A220 File Offset: 0x00008420
 		private void OnActivateOnMaid(DirectTouchMaid dtm)
 		{
 			foreach (Action<DirectTouchMaid> action in this.onActivateOnMaidHandlers)
@@ -294,7 +280,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000187 RID: 391 RVA: 0x0000A298 File Offset: 0x00008498
 		private void OnHit(DirectTouchController controller, TouchArea ta, bool onHit)
 		{
 			if (this.debug)
@@ -324,7 +309,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000188 RID: 392 RVA: 0x0000A374 File Offset: 0x00008574
 		private void OnLevelWasLoaded(int level)
 		{
 			try
@@ -357,7 +341,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000189 RID: 393 RVA: 0x0000A45C File Offset: 0x0000865C
 		private void OnStay(DirectTouchController controller, TouchArea ta)
 		{
 			foreach (Action<DirectTouchController, TouchArea> action in this.onStayHandlers)
@@ -376,7 +359,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x0600018A RID: 394 RVA: 0x00003209 File Offset: 0x00001409
 		public void RegisterEventHandlerProvider(DirectTouchTool.IDirectTouchEventHandlerProvider provider)
 		{
 			if (!this.eventHandlerProviders.Contains(provider))
@@ -385,16 +367,14 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x0600018B RID: 395 RVA: 0x00003225 File Offset: 0x00001425
 		public void RemoveDirectTouchMaid(DirectTouchMaid dtm)
 		{
 			this.activeDirectTouchMaids.Remove(dtm);
 		}
 
-		// Token: 0x0600018C RID: 396 RVA: 0x0000A4D4 File Offset: 0x000086D4
 		private void ShowOrHideDirectTouchMaidMarkers(bool show)
 		{
-			Maid[] array = global::UnityEngine.Object.FindObjectsOfType<Maid>();
+			Maid[] array = UnityEngine.Object.FindObjectsOfType<Maid>();
 			int i = 0;
 			while (i < array.Length)
 			{
@@ -407,7 +387,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 				{
 					Console.WriteLine("Show Direct Touch marker: " + maid.name);
 				}
-				if (!(maid.body0 != null))
+				if (maid.body0 == null)
 				{
 					goto IL_0223;
 				}
@@ -426,11 +406,11 @@ namespace CM3D2.GripMovePlugin.Plugin
 								Transform transform = CMT.SearchObjName(touchArea.base_t, text, true);
 								if (show)
 								{
-									if (!(transform != null))
+									if (transform == null)
 									{
 										Vector3 vector = touchArea.base_t.TransformDirection(touchArea.position) * touchArea.pos_len;
 										vector += touchArea.base_t.position;
-										GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+										GameObject gameObject = GameObject.CreatePrimitive(0);
 										Console.WriteLine(touchArea.areaName);
 										Console.WriteLine(vector);
 										Console.WriteLine(touchArea.len);
@@ -450,9 +430,9 @@ namespace CM3D2.GripMovePlugin.Plugin
 										}
 									}
 								}
-								else if (!(transform == null))
+								else if (transform != null)
 								{
-									global::UnityEngine.Object.Destroy(transform.gameObject);
+									UnityEngine.Object.Destroy(transform.gameObject);
 								}
 							}
 							else
@@ -462,7 +442,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 						}
 						goto IL_022D;
 					}
-					goto IL_0223;
 				}
 				IL_022D:
 				i++;
@@ -473,7 +452,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x0600018D RID: 397 RVA: 0x0000A738 File Offset: 0x00008938
 		private void Start()
 		{
 			this.debug = Settings.Instance.GetBoolValue("DirectTouchToolDebug", false);
@@ -489,7 +467,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.mouthHitRadius = Settings.Instance.GetFloatValue("DirectTouchToolMouthHitRadius", 0.05f);
 		}
 
-		// Token: 0x0600018E RID: 398 RVA: 0x0000A7F0 File Offset: 0x000089F0
 		private void TestTouch()
 		{
 			if (this.onPostHitTestHandlers.Count == 0 && this.onHitHandlers.Count == 0)
@@ -501,7 +478,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 			list2.AddRange(this.activeDirectTouchMaids);
 			foreach (DirectTouchMaid directTouchMaid in list2)
 			{
-				if (!(directTouchMaid != null) || !(directTouchMaid.maid == null))
+				if (directTouchMaid == null || directTouchMaid.maid != null)
 				{
 					if (directTouchMaid != null && directTouchMaid.maid != null && directTouchMaid.maid.Visible)
 					{
@@ -510,7 +487,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 						{
 							while (enumerator2.MoveNext())
 							{
-								if (!(enumerator2.Current.base_t != null))
+								if (enumerator2.Current.base_t == null)
 								{
 									flag = true;
 								}
@@ -522,7 +499,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 						}
 						else
 						{
-							global::UnityEngine.Object.Destroy(directTouchMaid);
+							UnityEngine.Object.Destroy(directTouchMaid);
 							this.activeDirectTouchMaids.Remove(directTouchMaid);
 						}
 					}
@@ -534,7 +511,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 			foreach (DirectTouchController directTouchController in this.controllers)
 			{
-				if (!(directTouchController == null) && directTouchController.isActiveAndEnabled)
+				if (directTouchController != null && directTouchController.isActiveAndEnabled)
 				{
 					directTouchController.HitTest(list);
 				}
@@ -555,7 +532,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x0600018F RID: 399 RVA: 0x0000A9F4 File Offset: 0x00008BF4
 		private void Update()
 		{
 			try
@@ -568,19 +544,18 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000190 RID: 400 RVA: 0x0000AA28 File Offset: 0x00008C28
 		private void Update2()
 		{
 			this.TestTouch();
 			if (this.debug)
 			{
-				if (!Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.F4))
+				if (!Input.GetKey((KeyCode)304) && Input.GetKeyDown((KeyCode)285))
 				{
 					Console.WriteLine("Show Direct Touch Maid Markers");
 					this.ShowOrHideDirectTouchMaidMarkers(true);
 					return;
 				}
-				if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.F4))
+				if (Input.GetKey((KeyCode)304) && Input.GetKeyDown((KeyCode)285))
 				{
 					Console.WriteLine("Show Direct Touch Maid Markers");
 					this.ShowOrHideDirectTouchMaidMarkers(false);
@@ -588,94 +563,64 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x0400010E RID: 270
 		public static DirectTouchTool _instance;
 
-		// Token: 0x0400010F RID: 271
 		private Material _markerMaterial;
 
-		// Token: 0x04000110 RID: 272
 		private Material _markerCustomMaterial;
 
-		// Token: 0x04000111 RID: 273
 		public List<DirectTouchMaid> activeDirectTouchMaids = new List<DirectTouchMaid>();
 
-		// Token: 0x04000112 RID: 274
 		public List<DirectTouchController> controllers = new List<DirectTouchController>();
 
-		// Token: 0x04000113 RID: 275
 		private float handHitRadius = 0.03f;
 
-		// Token: 0x04000114 RID: 276
 		private Vector3 mouthPos = new Vector3(0f, -0.08f, 0.02f);
 
-		// Token: 0x04000115 RID: 277
 		private float mouthHitRadius = 0.05f;
 
-		// Token: 0x04000116 RID: 278
 		private List<DirectTouchTool.IDirectTouchEventHandlerProvider> eventHandlerProviders = new List<DirectTouchTool.IDirectTouchEventHandlerProvider>();
 
-		// Token: 0x04000117 RID: 279
 		private List<Action<DirectTouchController, TouchArea, bool>> onHitHandlers = new List<Action<DirectTouchController, TouchArea, bool>>();
 
-		// Token: 0x04000118 RID: 280
 		private List<Action<DirectTouchController, TouchArea>> onStayHandlers = new List<Action<DirectTouchController, TouchArea>>();
 
-		// Token: 0x04000119 RID: 281
 		private List<Action<DirectTouchTool>> onPostHitTestHandlers = new List<Action<DirectTouchTool>>();
 
-		// Token: 0x0400011A RID: 282
 		private List<Action<DirectTouchMaid>> onActivateOnMaidHandlers = new List<Action<DirectTouchMaid>>();
 
-		// Token: 0x0400011B RID: 283
 		private List<CustomMaidTouchArea> customMaidTouchArea = new List<CustomMaidTouchArea>();
 
-		// Token: 0x0400011C RID: 284
 		private float touchSize_vagina = 0.03f;
 
-		// Token: 0x0400011D RID: 285
 		private float touchSize_anal = 0.03f;
 
-		// Token: 0x0400011E RID: 286
 		private float touchSize_hips = 0.12f;
 
-		// Token: 0x0400011F RID: 287
 		private float touchSize_mune_base = 0.12f;
 
-		// Token: 0x04000120 RID: 288
 		private float touchSize_hair_base = 0.13f;
 
-		// Token: 0x04000121 RID: 289
 		private float touchSize_mouth = 0.03f;
 
-		// Token: 0x04000122 RID: 290
 		private float touchSize_eye = 0.04f;
 
-		// Token: 0x04000123 RID: 291
 		private float touchSize_hara = 0.1f;
 
-		// Token: 0x04000124 RID: 292
 		private float touchSize_kata = 0.08f;
 
-		// Token: 0x04000125 RID: 293
 		private float touchSize_hand = 0.08f;
 
-		// Token: 0x04000126 RID: 294
 		private float touchSize_momo = 0.1f;
 
-		// Token: 0x04000127 RID: 295
 		private float touchSize_foot = 0.08f;
 
-		// Token: 0x04000128 RID: 296
 		public bool directTouchEnabled = true;
 
-		// Token: 0x04000129 RID: 297
 		private bool debug;
 
-		// Token: 0x0200002F RID: 47
 		public interface IDirectTouchEventHandlerProvider
 		{
-			// Token: 0x06000191 RID: 401
 			void InstallDirectTouchEventHandler(DirectTouchTool tool, int level);
 		}
 	}

@@ -5,18 +5,16 @@ using UnityEngine;
 
 namespace CM3D2.GripMovePlugin.Plugin
 {
-	// Token: 0x02000028 RID: 40
 	internal class SkirtIKTool : MonoBehaviour
 	{
-		// Token: 0x06000141 RID: 321 RVA: 0x000085D4 File Offset: 0x000067D4
 		private void Awake()
 		{
 			this.skirtIKMaterial = new Material(MaterialHelper.GetColorZOrderShader());
-			Color color = new Color(1f, 0f, 0f, 0.5f);
+			Color color;
+			color = new(1f, 0f, 0f, 0.5f);
 			this.skirtIKMaterial.SetColor("_Color", color);
 		}
 
-		// Token: 0x06000142 RID: 322 RVA: 0x00008620 File Offset: 0x00006820
 		private void InstallSkirtIK()
 		{
 			Maid maid = GameMain.Instance.CharacterMgr.GetMaid(0);
@@ -41,7 +39,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 						THair1 thair = array[i];
 						THair1 thair2 = array[i + 1];
 						THp thp = thair.hplist[thair.hplist.Count<THp>() - 1];
-						GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+						GameObject gameObject = GameObject.CreatePrimitive(0);
 						gameObject.name = "_SkirtIKMarker";
 						gameObject.GetComponent<Renderer>().sharedMaterial = this.skirtIKMaterial;
 						gameObject.transform.localScale = Vector3.one * 0.05f;
@@ -54,26 +52,23 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000143 RID: 323 RVA: 0x000024BB File Offset: 0x000006BB
 		private void UninstallSkirtIK()
 		{
 		}
 
-		// Token: 0x06000144 RID: 324 RVA: 0x00008778 File Offset: 0x00006978
 		private void Update()
 		{
-			if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.F2))
+			if (Input.GetKey((KeyCode)304) && Input.GetKeyDown((KeyCode)283))
 			{
 				this.UninstallSkirtIK();
 			}
-			else if (!Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.F2))
+			else if (!Input.GetKey((KeyCode)304) && Input.GetKeyDown((KeyCode)283))
 			{
 				this.InstallSkirtIK();
 			}
 			this.UpdateVTGT();
 		}
 
-		// Token: 0x06000145 RID: 325 RVA: 0x000087CC File Offset: 0x000069CC
 		private void UpdateVTGT()
 		{
 			Maid maid = GameMain.Instance.CharacterMgr.GetMaid(0);
@@ -118,16 +113,12 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x040000F0 RID: 240
 		private Material skirtIKMaterial;
 
-		// Token: 0x040000F1 RID: 241
 		private static FieldInfo f_hair1list = typeof(TBoneHair_).GetField("hair1list", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField);
 
-		// Token: 0x040000F2 RID: 242
 		private static FieldInfo f_skirtList = typeof(TBoneHair_).GetField("SkirtList", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField);
 
-		// Token: 0x040000F3 RID: 243
 		private static FieldInfo f_skirtListDBL = typeof(TBoneHair_).GetField("SkirtListDBL", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField);
 	}
 }

@@ -1,0 +1,292 @@
+GripMovePlugin v0.8.9
+(Additional HTC VIVE Controller / Oculus Touch plugin)
+
+[機能]
+このプラグインは VIVE (SteamVR) コントローラー / Oculus Touch に新しい操作モード "DIRECT" を追加します。
+Oculus Touch での操作については [Oculus Touch の操作] を見てください。  
+
+DIRECT モードはメニュー・ボタン (タッチパッドの上のボタン) を 1.5 秒長押しすることで切り替わります。 (時間は設定ファイルで調整できます)。
+一度 DIRECT モードがアクティブになったあとは、メニュー・ボタンで標準のモード (CAMERA や GRAB など) と切り替えられます。
+
+DIRECT モードでは以下の操作を行うことができます: 
+ - VIVE コントローラーの直接の移動でカメラを移動 (DIRECT モードでなくても有効)
+  トリガーを押したまま、VIVE コントローラーを動かすことでカメラを移動させることができます。
+  画面全体を掴んで移動するイメージです。
+  設定ファイルでトリガーボタンでなくグリップボタンを割り当てることもできます。
+  
+  回転については左右以外の回転は無効にしています(酔い易いため)。ただし歯車メニューから切り替えることは可能です。
+  
+
+ - GUI スクリーンの移動 
+  DIRECT モードでは GUI スクリーンが手元に浮き上がります。
+  このスクリーンに触りながらグリップ・ボタンを押すことでスクリーンを掴み、そのまま好きな位置角度に動かすことができ、グリップ・ボタンを離した位置に置かれます。
+  GUI スクリーンを VIVE コントローラーで触った位置にマウスカーソルが動きます。タッチパッドを押すことでマウスクリックと同じことができます。
+  タッチパッドの左側を押すことで左クリックになり、右側を押せば右クリックになります。
+  (注: Oculus Touch の場合は、A, X ボタンが左クリックになり、親指スティックを押すと右クリックになります)。
+  VIVE コントローラーがスクリーンから離れている間も、タッチパッドをタッチしスワイプする(押すのではなく)ことでマウスカーソルを移動することができます。
+  メニュー・ボタンを長押し (1.5秒) することで GUI スクリーンの位置は正面位置にリセットされます。
+  
+ - 主観視点へ移動
+  夜伽などの場面で、トリガー・ボタンを押しながらタッチパッドを押すことで、主人公の頭の位置(主観視点) にカメラを移動します。
+  (主観視点への自動移動が、VR beta patch 1.19 で標準機能として組み込まれたためほぼ不要です)
+  左右以外の回転を有効にした場合、トリガー・ボタンを押しながら、タッチバッドを長押し (3秒) して離すことでカメラの角度をリセットします。
+
+ - 夜伽ツール  DIRECT(com) モード
+  夜伽や回想などの夜伽コマンドが実行できるシーンで、グリップ・ボタンを押しながらメニュー・ボタンを押すことで、
+  DIRECT モードと DIRECT(com) モードを切り替えることができます。
+  (注 v0.8.0 では Oculus Touch では DIRECT(com) モードが動作しません)
+
+  DIRECT(com) モードでは、夜伽コマンドが VIVE コントローラーの横に表示され、タッチ・パッドを押すことで選択できるようになります
+  タッチ・パッドを横方向にスワイプすることでコマンドを選択できます (白くハイライトされたコマンドが現在選択されているコマンドです。)
+  灰色のコマンドは現在の状態では実行できないコマンドです。
+  
+  DIRECT(com) モードの間も GUI スクリーンを直接触ってマウス操作を行うことができます。
+  GUI スクリーンに触れている間は、タッチパッドを押しても、マウスクリックとして解釈されます。
+  ただし、DIRECT(com)モードでは、タッチパッドのスワイプによるマウスカーソルの移動はできません。
+ 
+ - 撮影モードにおける IK (Inversive Kinematics) ツール - DIRECT(IK) モード
+  (公式の) 撮影モード (もしくはエディット・モード) において、グリップ・ボタンを押しながらメニュー・ボタンを押すことで、
+  DIRECT モードと DIRECT(IK) モードを切り替えることができます。
+  このモードに切り替えると IK マーカーが表示され、メイドのポーズを操作できるようになります。
+  IK マーカーはグリップ・ボタンで掴むことができます。
+  タッチパッドを押すと、IK マーカーの表示/非表示を切り替えることができます。
+  IKマーカーを使用して操作可能な個所は  手の指、手 (手首), 前腕, 上腕, 鎖骨, 首 (回転のみ), 背骨 Spine-Spin1a (角度), 太もも (角度), ふくらはぎ、足です  
+  緑色の IK マーカーはメイド・アイテム (箒など) の位置や角度を調整するために利用できます。
+  v0.6.0 から同梱された CM3D2.PhotoIKBase.Plugin.dll を使用することで非VRの実行ファイル (CM3D2x64.exeなど) において、
+  IK情報を含む撮影セーブ・データからの IK 情報を読み込みを行うことができます。
+
+  <<公式撮影モードの ポーズ・エディター について>>
+  このバージョンでは、公式パッチ v1.34 (VRパッチ 1.21) で導入されたポーズ・エディターの設定と同期します。
+
+  IKマーカーを操作すると、自動的にポーズエディットが "ON" に設定されます。
+
+  <<注意>>
+  このモードのため、GripMovePlugin は撮影セーブ時にセーブ・データに IK 情報 (位置や角度)を追記します。
+  (セーブ・データは <CM3D2>/PhotoModeData/SaveData に保存されます)
+  v0.7.0 からは公式のポーズ・エディターが保存しない _ik_ ノード (主にメイド・アイテムの位置、角度情報) の情報のみを保存、ロードします。
+  問題を避けるために、既存の撮影データは使用せずに、このプラグイン用の専用のセーブ・データを使用することを推奨します。
+
+ - Maid Direct Touch フレームワーク (v0.6.0 新機能)
+  VIVE コントローラーを使用して直接メイドにタッチする追加 MOD の開発を支援するフレームワークを追加しました。
+  このフレームワークを使用したサンプル実装としては別のプラグイン (CM3D2.YotogiDirectTouch.Plugin もしくは CM3D2.VIVEDirectTouchAddon.Plugin) を参照してください。
+
+  標準のタッチ可能場所のサイズは gripmoveplugin.ini に以下のエントリを追加することで変更できます (半径 / メートル)。
+   DirectTouchTool_Size_VAGINA=0.03
+   DirectTouchTool_Size_ANAL=0.03
+   DirectTouchTool_Size_HIP=0.12
+   DirectTouchTool_Size_MUNE=0.12
+   DirectTouchTool_Size_HAIR=0.13
+   DirectTouchTool_Size_MOUTH=0.03
+   DirectTouchTool_Size_EYE=0.04
+   DirectTouchTool_Size_HARA=0.1
+   DirectTouchTool_Size_KATA=0.08
+   DirectTouchTool_Size_HAND=0.08
+   DirectTouchTool_Size_MOMO=0.1
+   DirectTouchTool_Size_FOOT=0.08
+
+  <<プラグイン開発者の方へ>>
+  VIVEコントローラと Oculus Touch を共通化するために DirectTouchController に vrdeviceWrapper 属性を追加しています。
+  DeviceWrapper クラスのインターフェースは SteamVR_Controller.Device インターフェースのサブセットとしています。
+  ボタンなどのステータスを処理する場合は vrdeviceWrapper を使用してください。 
+  既存のコードとの互換性のため vrcontroller プロパティーはそのまま残していますが、コントローラーが Oculus Touch の場合は null になります。
+
+ - VIVE Model Replace ツール (v0.6.1 新機能)
+  DIRECT モードの間、グリップ・ボタンを押しながらタッチパッドを押すことで、VIVE コントローラーのモデルを置き換えます。
+  デフォルトでは 手 (mbody から実行時中に切り出し) とピンクバイブ (カスタム・モデルのサンプルとして) に切り替わります。
+  詳細な設定は gripmove_model.ini で行うことができます。
+   - Hand<xxx> - 手のモデルの色、位置、角度 
+  カスタム・モデル (CM3D2 の .model 形式) を設定することで任意のモデルに置き換えることができます。
+   - CustomModelCount  (カスタム・モデルの数)
+   - CustomModel_<数値>_ID モデルのID (重複不可)
+   - CustomModel_<数値>_Label モデルの表示名 (現在のところ利用されない)
+   - CustomModel_<数値>_Model .model ファイル名 (CM3D2 .model 形式)
+   - CustomModel_<数値>_Pos_X, Pos_Y, Pos_Z  表示位置の調整
+   - CustomModel_<数値>_Rot_X, Rot_Y, Rot_Z  表示角度の調整
+   - CustomModel_<数値>_HidePointer  DIRECTモードのポインター (球) を非表示にする場合は True
+   - CustomModel_<数値>_EnabledHand  左手だけや右手だけで利用できるようにする場合は "L" もしくは "R" を指定。両方であれば "LR"。
+
+ - 実行時の設定メニュー (v0.7.0 新機能)
+  歯車メニュー (Grip アイコン) が追加されました。
+  このメニューから設定画面を開き、以下の設定を実行時に切り替えることができます。
+    トリガー (もしくはグリップ) による移動/回転機能の有効化/無効化
+    縦方向の回転の有効化/無効化 (および回転のリセット)
+    縦方向の移動の有効化/無効化
+    DIRECT(IK)モード時にメイドを掴む機能を無効化する/しない
+    DIRECTモード時 (IK含む) にメイドを掴む機能を無効化する/しない
+
+
+ - 旧GUI表示 (v0.8.1 新機能)
+  VRで表示されないプラグインのGUI画面 (Unity IMGUI) を表示します。
+  歯車メニュー (Grip アイコン) から以下を選択します。
+   旧GUI表示 - GUI を表示
+   旧GUI透過 - 透過設定
+   位置リセット - GUIの表示位置をリセットします (正面 40cm 位置)
+   マウス操作 - VRコントローラーを使用せずにマウスで操作する
+
+  GUI操作のための画面設定について
+   GUI上の文字やウィンドウの配置についてはスクリーン設定に依存します。
+   また全画面表示の有無によっても変わります。全画面表示の設定は、VR側ではなく本体側の設定に依存します。
+   
+   VIVEコントローラや Oculus Touch を使用せずに、マウスを使用して操作を行う場合、以下の用に構成することを推奨します。
+    1. (VR版ではない本体) CM3D2x64.exe を起動
+    2. Config を開いて、画面解像度を 1280 x 720 の Fullscreen に設定
+    3. End をクリックして終了
+    4. CM3D2VRx64.exe を実行して VR 版を起動
+    5. Config を開いて、Fullscreen に設定
+
+   IMGUIスクリーンのサイズの変更について
+    IMGUIスクリーンのVR内でのサイズは gripmoveplugin.ini の IMGUISize パラメータで指定します。
+
+   
+
+[Oculus Touch の操作]
+Oculus Touch のボタンと以下のように対応します。
+
+VIVEコントローラー     <-> Oculus Touch    
+
+メニュー               <-> Y ボタン / B ボタン
+トリガー               <-> 人差し指トリガー
+グリップ               <-> ハンド(中指)トリガー
+タッチパッド(クリック) <-> X ボタン / A ボタン
+タッチパッド(軸座標)   <-> 親指スティック
+
+Oculus Touch の親指スティックのクリックはマウスの右クリックに対応します。
+
+
+[Updates]
+v0.8.9
+ - バカンスで Oculus Touch の動作がおかしくなる問題の修正
+v0.8.8
+ - 公式パッチ 1.50 対応
+v0.8.7
+ - VR バケーションパック (公式パッチ 1.49) 対応
+v0.8.6
+ - VR Patch 1.34 (公式 1.48) 対応
+ - Oculus Touch での 夜伽ツール - DIRECT (com) の実行
+v0.8.5
+ - VR Patch 1.33 (公式 1.47) 対応
+v0.8.4
+ - VR Patch 1.31 (公式 1.46) 対応
+v0.8.3
+ - VR Patch 1.30 (公式 1.45) 対応
+ - VIVE コントローラーで撮影モード中にメイドがつかめなくなっていた問題の修正
+v0.8.2
+ - 旧GUIのマウス操作の追加
+v0.8.1
+ - 旧GUI表示機能の追加
+v0.8.0
+ - VR パッチ 1.28 対応 (公式 1.43 パッチ)
+ - Oculus Touch 対応 (夜伽コマンド・ツール動作に制約あり)
+ - Direct Touch フレームワークの修正 (デバッグ表示サイズの調整 / Oculus Touch 対応)
+v0.7.3
+ - VR パッチ 1.26 の確認 (公式 1.40 パッチ)
+ - 撮影モードでのパフォーマンス修正.
+ - 夜伽モードでのパフォーマンス修正 (DirectTouchTool の NPE 回避).
+v0.7.2
+ - 掴み (GRAB) 処理の修正 (公式 VR beta パッチ v1.24 対応)
+ - DIRECT モードのときに掴まないようにできるオプションを追加 (歯車メニュー UI から設定)
+v0.7.1
+ - 公式 VR beta パッチ v1.24 対応 (DIRECT モードでカーソルが動かない問題への暫定対応)
+v0.7.0
+ - 公式パッチ v1.34 以降が必要 (ポーズ・エディット・モード)
+ - 歯車メニューを追加 (GripMove実行時設定画面 - screenshot_06.jpg)
+ - 公式ポーズ・エディットとの連携 (IK操作時)
+ - エディット画面での IK操作を無効化
+ - DIRECTモードを起動時に有効にする機能の追加 (前回の最後に設定された情報に従って)
+ - DIRECTモード初回起動時のスクリーン位置を HMD の正面位置に変更  
+v0.6.5a
+ - 夜伽ツール  DIRECT(com) モードで一度のクリックで複数回コマンドが実行されることがある問題の修正
+v0.6.5
+ - Direct Touch フレームワーク: MaidTouchArea の追加 (EYE, KATA, HAND, MOMO, FOOT, CUSTOM) - screenshot_005.jpg
+ - Direct Touch フレームワーク: 触れるポイントのカスタム追加APIの実装 (DirectTouchTool.AddCustomMaidTouchArea)     
+v0.6.4
+ - トリガー/グリップによるカメラの移動を、それ以外のボタンが押されていたりタッチパッドに触れられている場合に無効にする (Direct Touch フレームワークでの同時押しの利用のため)。     
+v0.6.3
+ - body の MOD に _IK_ ボーンが不足している場合に撮影モードのセーブができない現象を回避するロジックを追加。
+v0.6.2
+ - AddOnStayHandler() メソッドを Direct Touch Tool に追加
+ - バグ修正 - DIRECT モード起動時にポインターとテキストが非表示になってしまう問題。
+v0.6.1a
+ - バグ修正 (読み込み済みの置き換え用モデルが床に表示されたままになるバグ)
+v0.6.1
+ - VIVE Model Replace ツール の追加
+ - Maid Direct Touch フレームワークのバグ修正
+v0.6.0
+ - Maid Direct Touch フレームワークの追加
+ - 非VRランタイム用の撮影モードIKデータ セーブ/ロード プラグイン (CM3D2.PhotoIKBase.Plugin) の追加
+v0.5.5
+ - Added Maid Item rotation/position control in IK tool.
+v0.5.4a
+ - Hide cursor pointer marker when the mode changed to normal mode (GRAB, CAMERA, etc.).
+v0.5.4
+ - Fix to work with VR patch 1.19 (do work with the new camera mode). 
+ - IK markers are shown as transparent object through character. 
+v0.5.3a (alpha)
+ - Bugfix (pointer lost when scene changed). 
+v0.5.3 (alpha)
+ - Bugfix (performance). Removed unnecessary check. Improved general performance.
+v0.5.2 (alpha)
+ - Fixed for better performance on IK enabled mode.
+v0.5.1b (alpha)
+ - Fixed IK enabled scene IDs for Chu-B lip ver.
+ - Added CM3D2OHVRx64.exe to PluginFilter so that the plugin run on Chu-B lip ver. I can't test is so it may work or may not.
+v0.5.0 (alpha)
+ - Added IK mode into the official Photo mode (you can use in Edit mode as well but the IK node is not saved in the Edit mode).
+v0.4.1
+ - Now Move Self by Trigger is disabled when you are grabbing your maid in Edit mode.
+v0.4.0
+ - Added handy Yotogi Command Tool - DIRECT (com) mode.
+ - Added multiple configuration parameters, e.g. ActivateOrResetSecs which controlls the time need to activate DIRECT mode (or reset GUI screen position).
+ - Adjusts some configuration parameters.
+v0.3.0
+ - Added Move to Head feature
+ - Added multiple configuration parameters (see Config/gripmoveplugin.ini file for details)
+v0.2.0
+ - Fixed cursor control logic (Touchpad control and Direct screen access is conflicted. Now the direct screen access wins if the controller is close enough to the screen.) 
+ - Added configuration file (ini file) and configuration entry to configure buttons used.
+v0.1.0
+ - Initial Release
+
+
+[設定ファイル]
+設定オプションは "UnityInjector/Config/gripmoveplugin.ini" ファイルに含まれています。
+このファイルの修正後、設定を読み直す場合には再起動が必要です。
+
+(設定例)
+ [GripMovePlugin]
+ #Move self by grip, and move GUI screen by Trigger (v0.1.0)
+ MoveSelfButton=Grip 
+ MoveScreenButton=Trigger 
+ MoveToHeadButton=Touchpad 
+ 
+ #Bigger screen
+ ScreenSize=0.4
+
+ #Unlock the x / z rotation (not recommend)
+ LockRotateXZ=false
+
+[インストール方法]
+- 公式バッチ 1.50 が必要です。
+- UnityInjector が必要です。
+- zip に含まれる "UnityInjector" ディレクトリの中身を UnityInjector ディレクトリ (Sybaris であれば Sybaris/Plugins/UnityInjector) ディレクトリにコピーしてください。
+
+
+[アンインストール方法]
+- "CM3D2.GripMovePlugin.Plugin.dll" を削除してください。
+- "CM3D2.PhotoIKBase.Plugin.dll" を削除してください。
+- "Config/gripmoveplugin.ini" を削除してください。
+- "Config/photoikbaseplugin.ini" を削除してください。
+
+
+
+[謝辞]
+VRパッチの開発にあたり PlayClub VR のコードを公開してくれた EusthEnoptEron 氏に感謝します。
+CM3D2 プラグインとして SkillCommandShortCut MOD をはじめとして github にソース・コードを公開してくれた neguse11 氏に感謝します。
+
+
+[注意書き]
+※MODはKISSサポート対象外です。
+※MODを利用するに当たり、問題が発生してもKISSは一切の責任を負いかねます。
+※カスタムメイド3D2を購入されている方のみが利用できます。
+※カスタムメイド3D2上で表示する目的以外の利用は禁止します。
+※これらの事項は http://kisskiss.tv/kiss/diary.php?no=558 を優先します。

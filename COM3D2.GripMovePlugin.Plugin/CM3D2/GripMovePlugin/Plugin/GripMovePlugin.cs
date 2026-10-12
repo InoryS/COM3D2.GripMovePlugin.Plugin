@@ -7,38 +7,29 @@ using UnityInjector.Attributes;
 
 namespace CM3D2.GripMovePlugin.Plugin
 {
-	// Token: 0x02000038 RID: 56
 	[PluginName("GripMovePlugin")]
 	[PluginVersion("0.8.9.4")]
 	public class GripMovePlugin : PluginBase
 	{
-		// Token: 0x17000033 RID: 51
-		// (get) Token: 0x060001E3 RID: 483 RVA: 0x000035AA File Offset: 0x000017AA
-		// (set) Token: 0x060001E4 RID: 484 RVA: 0x000035B1 File Offset: 0x000017B1
 		public static string PluginDataPath { get; private set; }
 
-		// Token: 0x17000034 RID: 52
-		// (get) Token: 0x060001E5 RID: 485 RVA: 0x000035B9 File Offset: 0x000017B9
 		private bool isUIVisible
 		{
 			get
 			{
-				return !(this.uiPanel == null) && this.uiPanel.gameObject.activeSelf;
+				return this.uiPanel != null && this.uiPanel.gameObject.activeSelf;
 			}
 		}
 
-		// Token: 0x060001E7 RID: 487 RVA: 0x000035F7 File Offset: 0x000017F7
 		public GripMovePlugin()
 		{
 			GripMovePlugin.PluginDataPath = base.DataPath;
 		}
 
-		// Token: 0x060001E8 RID: 488 RVA: 0x000024BB File Offset: 0x000006BB
 		private void Awake()
 		{
 		}
 
-		// Token: 0x060001E9 RID: 489 RVA: 0x0000D228 File Offset: 0x0000B428
 		private void CreateUI()
 		{
 			if (this.uiPanel != null)
@@ -52,7 +43,8 @@ namespace CM3D2.GripMovePlugin.Plugin
 			{
 				return;
 			}
-			Vector3 vector = new Vector3((float)this.PanelWidth / 2f, 100f, 0f);
+			Vector3 vector;
+			vector = new((float)this.PanelWidth / 2f, 100f, 0f);
 			int num = (int)Settings.Instance.GetFloatValue("UIPosX", -10000f);
 			int num2 = (int)Settings.Instance.GetFloatValue("UIPosY", -10000f);
 			UIPanel component = uiroot.GetComponent<UIPanel>();
@@ -70,14 +62,14 @@ namespace CM3D2.GripMovePlugin.Plugin
 			bgSpr.name = "BG";
 			bgSpr.atlas = systemDialogAtlas;
 			bgSpr.spriteName = "cm3d2_dialog_frame";
-			bgSpr.type = UIBasicSprite.Type.Sliced;
+			bgSpr.type = (UIBasicSprite.Type)1;
 			bgSpr.SetDimensions(this.PanelWidth, this.PanelHeight);
 			UISprite uisprite = NGUITools.AddChild<UISprite>(gameObject);
 			uisprite.name = "TitleTab";
 			uisprite.depth = bgSpr.depth - 1;
 			uisprite.atlas = systemDialogAtlas;
 			uisprite.spriteName = "cm3d2_dialog_frame";
-			uisprite.type = UIBasicSprite.Type.Sliced;
+			uisprite.type = (UIBasicSprite.Type)1;
 			uisprite.SetDimensions(300, 80);
 			uisprite.autoResizeBoxCollider = true;
 			uisprite.gameObject.AddComponent<UIDragObject>().target = gameObject.transform;
@@ -93,7 +85,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 			uilabel.fontSize = 18;
 			uilabel.text = "GripMovePlugin 0.8.9.4";
 			UITable uiTable = NGUITools.AddChild<UITable>(gameObject);
-			uiTable.pivot = UIWidget.Pivot.Top;
+			uiTable.pivot = (UIWidget.Pivot)1;
 			uiTable.columns = 1;
 			uiTable.padding = new Vector2(10f, 5f);
 			uiTable.hideInactive = true;
@@ -106,7 +98,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 				uilabel2.depth = bgSpr.depth + 1;
 				uilabel2.width = this.PanelWidth - 100;
 				uilabel2.height = 30;
-				uilabel2.alignment = NGUIText.Alignment.Left;
+				uilabel2.alignment = (NGUIText.Alignment)1;
 				uilabel2.trueTypeFont = defaultFont;
 				uilabel2.fontSize = 22;
 				uilabel2.spacingX = 0;
@@ -141,7 +133,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			gameObject.SetActive(false);
 		}
 
-		// Token: 0x060001EA RID: 490 RVA: 0x0000D908 File Offset: 0x0000BB08
 		public void SaveUIPos()
 		{
 			if (this.uiPanel == null)
@@ -157,7 +148,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x060001EB RID: 491 RVA: 0x0000362B File Offset: 0x0000182B
 		private IEnumerator InstallGripMoveControllerCo()
 		{
 			this.vrCameraOrigin = null;
@@ -182,7 +172,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			yield break;
 		}
 
-		// Token: 0x060001EC RID: 492 RVA: 0x0000D9CC File Offset: 0x0000BBCC
 		private void OnGearMenuClick(GameObject gameObject)
 		{
 			this.CreateUI();
@@ -203,7 +192,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x060001ED RID: 493 RVA: 0x0000363A File Offset: 0x0000183A
 		private void OnLevelWasLoaded(int level)
 		{
 			base.StopAllCoroutines();
@@ -211,7 +199,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			base.StartCoroutine("InstallGripMoveControllerCo");
 		}
 
-		// Token: 0x060001EE RID: 494 RVA: 0x0000DAF4 File Offset: 0x0000BCF4
 		private void RegisterGearButton()
 		{
 			if (Buttons.Contains(this.gearMenuButtonName))
@@ -221,13 +208,11 @@ namespace CM3D2.GripMovePlugin.Plugin
 			Buttons.SetText(Buttons.Add(this.gearMenuButtonName, "GripMovePlugin", GripMovePlugin.MenuIconPng, new Action<GameObject>(this.OnGearMenuClick)), "GripMovePlugin");
 		}
 
-		// Token: 0x060001EF RID: 495 RVA: 0x00003654 File Offset: 0x00001854
 		private void ResetIMGUIPos()
 		{
 			IMGUIQuad.ResetIMGUIPosition();
 		}
 
-		// Token: 0x060001F0 RID: 496 RVA: 0x0000365B File Offset: 0x0000185B
 		private void ResetRotation()
 		{
 			if (this.vrCameraOrigin != null)
@@ -236,13 +221,12 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x060001F1 RID: 497 RVA: 0x0000DB44 File Offset: 0x0000BD44
 		private void Start()
 		{
 			if (!Environment.CommandLine.ToLower().Contains("/vr"))
 			{
 				Debug.Log("Is NOT VR Mode. Shutdown GripMovePlugin.");
-				global::UnityEngine.Object.DestroyImmediate(this);
+				UnityEngine.Object.DestroyImmediate(this);
 				return;
 			}
 			Debug.Log("Start GripMovePlugin");
@@ -257,84 +241,72 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x060001F2 RID: 498 RVA: 0x00003676 File Offset: 0x00001876
 		private void ToggleDirectModeDisableGrab()
 		{
 			MenuToolBase.SetDisableGrabWhenDirectMode(!MenuToolBase.GetDisableGrabWhenDirectMode());
 			UIUtils.SetToggleButtonColor(UIButton.current, MenuToolBase.GetDisableGrabWhenDirectMode());
 		}
 
-		// Token: 0x060001F3 RID: 499 RVA: 0x00003694 File Offset: 0x00001894
 		private void ToggleIKModeDisableGrab()
 		{
 			MenuToolBase.SetDisableGrabWhenIKMode(!MenuToolBase.GetDisableGrabWhenIKMode());
 			UIUtils.SetToggleButtonColor(UIButton.current, MenuToolBase.GetDisableGrabWhenIKMode());
 		}
 
-		// Token: 0x060001F4 RID: 500 RVA: 0x000036B2 File Offset: 0x000018B2
 		private void ToggleIMGUINoVRController()
 		{
 			IMGUIQuad.IsNoVRController = !IMGUIQuad.IsNoVRController;
 			UIUtils.SetToggleButtonColor(UIButton.current, IMGUIQuad.IsNoVRController);
 		}
 
-		// Token: 0x060001F5 RID: 501 RVA: 0x000036D0 File Offset: 0x000018D0
 		private void ToggleIMGUITransparent()
 		{
 			IMGUIQuad.IsTransparent = !IMGUIQuad.IsTransparent;
 			UIUtils.SetToggleButtonColor(UIButton.current, IMGUIQuad.IsTransparent);
 		}
 
-		// Token: 0x060001F6 RID: 502 RVA: 0x000036EE File Offset: 0x000018EE
 		private void ToggleIMGUIVisible()
 		{
 			IMGUIQuad.IsVisble = !IMGUIQuad.IsVisble;
 			UIUtils.SetToggleButtonColor(UIButton.current, IMGUIQuad.IsVisble);
 		}
 
-		// Token: 0x060001F7 RID: 503 RVA: 0x0000370C File Offset: 0x0000190C
 		private void ToggleIMGUIAttach()
 		{
 			IMGUIQuad.IsAttach = !IMGUIQuad.IsAttach;
 			UIUtils.SetToggleButtonColor(UIButton.current, IMGUIQuad.IsAttach);
 		}
 
-		// Token: 0x060001F8 RID: 504 RVA: 0x0000372A File Offset: 0x0000192A
 		private void ToggleLockMoveY()
 		{
 			GripMoveControllerBase.SetLockMoveY(!GripMoveControllerBase.GetLockMoveY());
 			UIUtils.SetToggleButtonColor(UIButton.current, GripMoveControllerBase.GetLockMoveY());
 		}
 
-		// Token: 0x060001F9 RID: 505 RVA: 0x00003748 File Offset: 0x00001948
 		private void ToggleLockRotHeadYZ()
 		{
 			GripMoveControllerBase.SetLockRotHeadYZ(!GripMoveControllerBase.GetLockRotHeadYZ());
 			UIUtils.SetToggleButtonColor(UIButton.current, GripMoveControllerBase.GetLockRotHeadYZ());
 		}
 
-		// Token: 0x060001FA RID: 506 RVA: 0x00003766 File Offset: 0x00001966
 		private void ToggleLockRotXZ()
 		{
 			GripMoveControllerBase.SetLockRotXZ(!GripMoveControllerBase.GetLockRotXZ());
 			UIUtils.SetToggleButtonColor(UIButton.current, GripMoveControllerBase.GetLockRotXZ());
 		}
 
-		// Token: 0x060001FB RID: 507 RVA: 0x00003784 File Offset: 0x00001984
 		private void ToggleMoveEnabled()
 		{
 			GripMoveControllerBase.SetMoveEnabled(!GripMoveControllerBase.GetMoveEnabled());
 			UIUtils.SetToggleButtonColor(UIButton.current, GripMoveControllerBase.GetMoveEnabled());
 		}
 
-		// Token: 0x060001FC RID: 508 RVA: 0x000037A2 File Offset: 0x000019A2
 		private void TogglePointerVisible()
 		{
 			MenuToolBase.SetPointerVisible(!MenuToolBase.GetPointerVisible());
 			UIUtils.SetToggleButtonColor(UIButton.current, MenuToolBase.GetPointerVisible());
 		}
 
-		// Token: 0x060001FD RID: 509 RVA: 0x0000DBAC File Offset: 0x0000BDAC
 		private void ToggleNewOldUI()
 		{
 			bool flag = false;
@@ -349,13 +321,12 @@ namespace CM3D2.GripMovePlugin.Plugin
 			UIUtils.SetToggleButtonColor(UIButton.current, GameMain.Instance.CMSystem.OvrUseNewControllerType);
 		}
 
-		// Token: 0x060001FE RID: 510 RVA: 0x0000DC24 File Offset: 0x0000BE24
 		private void tryGrabCamera()
 		{
 			GameObject gameObject = GameObject.Find("BaseRoomBase");
-			if (GameMain.Instance.VRFamily == GameMain.VRFamilyType.HTC)
+			if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)2)
 			{
-				ViveCamera viveCamera = global::UnityEngine.Object.FindObjectOfType<ViveCamera>();
+				ViveCamera viveCamera = UnityEngine.Object.FindObjectOfType<ViveCamera>();
 				if (viveCamera != null)
 				{
 					GameObject gameObject2 = gameObject;
@@ -364,7 +335,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 					return;
 				}
 			}
-			else if (GameMain.Instance.VRFamily == GameMain.VRFamilyType.Oculus)
+			else if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)1)
 			{
 				OvrCamera ovrCamera = GameMain.Instance.OvrMgr.OvrCamera;
 				if (ovrCamera != null)
@@ -378,21 +349,19 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x060001FF RID: 511 RVA: 0x000037C0 File Offset: 0x000019C0
 		private void tryInstallGripMoveController()
 		{
-			if (GameMain.Instance.VRFamily == GameMain.VRFamilyType.HTC)
+			if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)2)
 			{
 				this.tryInstallGripMoveControllerVIVE();
 				return;
 			}
-			if (GameMain.Instance.VRFamily == GameMain.VRFamilyType.Oculus)
+			if (GameMain.Instance.VRFamily == (GameMain.VRFamilyType)1)
 			{
 				this.tryInstallGripMoveControllerTouch();
 			}
 		}
 
-		// Token: 0x06000200 RID: 512 RVA: 0x0000DCC8 File Offset: 0x0000BEC8
 		private void tryInstallGripMoveControllerTouch()
 		{
 			OVRCameraRig componentInParent = GameMain.Instance.OvrMgr.OvrCamera.gameObject.GetComponentInParent<OVRCameraRig>();
@@ -406,10 +375,10 @@ namespace CM3D2.GripMovePlugin.Plugin
 					leftHandAnchor.gameObject.GetComponent<GripMoveControllerTouch>().target = this.vrCameraOrigin;
 					this.leftInstalled = true;
 				}
-				else if (leftHandAnchor.gameObject.GetComponent<OvrController>() != null && ((connectedControllers & OVRInput.Controller.LTouch) != OVRInput.Controller.None || (connectedControllers & OVRInput.Controller.Touch) != OVRInput.Controller.None))
+				else if (leftHandAnchor.gameObject.GetComponent<OvrController>() != null && ((connectedControllers & (OVRInput.Controller)1) != 0 || (connectedControllers & (OVRInput.Controller)3) != 0))
 				{
 					GripMoveControllerTouch gripMoveControllerTouch = leftHandAnchor.gameObject.AddComponent<GripMoveControllerTouch>();
-					gripMoveControllerTouch.ovrController = OVRInput.Controller.LTouch;
+					gripMoveControllerTouch.ovrController = (OVRInput.Controller)1;
 					gripMoveControllerTouch.target = this.vrCameraOrigin;
 					this.leftController = gripMoveControllerTouch;
 					this.leftInstalled = true;
@@ -423,10 +392,10 @@ namespace CM3D2.GripMovePlugin.Plugin
 					this.rightInstalled = true;
 					return;
 				}
-				if (rightHandAnchor.gameObject.GetComponent<OvrController>() != null && ((connectedControllers & OVRInput.Controller.RTouch) != OVRInput.Controller.None || (connectedControllers & OVRInput.Controller.Touch) != OVRInput.Controller.None))
+				if (rightHandAnchor.gameObject.GetComponent<OvrController>() != null && ((connectedControllers & (OVRInput.Controller)2) != 0 || (connectedControllers & (OVRInput.Controller)3) != 0))
 				{
 					GripMoveControllerTouch gripMoveControllerTouch2 = rightHandAnchor.gameObject.AddComponent<GripMoveControllerTouch>();
-					gripMoveControllerTouch2.ovrController = OVRInput.Controller.RTouch;
+					gripMoveControllerTouch2.ovrController = (OVRInput.Controller)2;
 					gripMoveControllerTouch2.target = this.vrCameraOrigin;
 					this.rightController = gripMoveControllerTouch2;
 					this.rightInstalled = true;
@@ -435,7 +404,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000201 RID: 513 RVA: 0x0000DE14 File Offset: 0x0000C014
 		private void tryInstallGripMoveControllerVIVE()
 		{
 			OvrMgr.OvrObject ovr_obj = GameMain.Instance.OvrMgr.ovr_obj;
@@ -456,40 +424,28 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x04000160 RID: 352
 		public const string NAME = "GripMovePlugin";
 
-		// Token: 0x04000161 RID: 353
 		public const string VERSION = "0.8.9.4";
 
-		// Token: 0x04000162 RID: 354
 		private GameObject vrCameraOrigin;
 
-		// Token: 0x04000163 RID: 355
 		private bool leftInstalled;
 
-		// Token: 0x04000164 RID: 356
 		private bool rightInstalled;
 
-		// Token: 0x04000165 RID: 357
 		private readonly int PanelWidth = 500;
 
-		// Token: 0x04000166 RID: 358
 		private readonly int PanelHeight = 640;
 
-		// Token: 0x04000167 RID: 359
 		private UIPanel uiPanel;
 
-		// Token: 0x04000168 RID: 360
 		private GripMoveControllerBase leftController;
 
-		// Token: 0x04000169 RID: 361
 		private GripMoveControllerBase rightController;
 
-		// Token: 0x0400016A RID: 362
 		private string gearMenuButtonName = "GripMovePluginMenu";
 
-		// Token: 0x0400016B RID: 363
 		private static byte[] MenuIconPng = new byte[]
 		{
 			137, 80, 78, 71, 13, 10, 26, 10, 0, 0,

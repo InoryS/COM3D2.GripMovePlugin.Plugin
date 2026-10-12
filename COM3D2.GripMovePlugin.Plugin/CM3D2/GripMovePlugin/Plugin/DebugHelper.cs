@@ -8,11 +8,8 @@ using UnityEngine.UI;
 
 namespace CM3D2.GripMovePlugin.Plugin
 {
-	// Token: 0x02000033 RID: 51
 	public static class DebugHelper
 	{
-		// Token: 0x17000031 RID: 49
-		// (get) Token: 0x060001AB RID: 427 RVA: 0x000032FC File Offset: 0x000014FC
 		public static string DocRoot
 		{
 			get
@@ -21,7 +18,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x060001AC RID: 428 RVA: 0x0000B08C File Offset: 0x0000928C
 		public static void Analyze(Transform node, int depth, int idx, TextWriter writer)
 		{
 			object[] array = new object[6];
@@ -74,11 +70,10 @@ namespace CM3D2.GripMovePlugin.Plugin
 			writer.Write("}},");
 		}
 
-		// Token: 0x060001AD RID: 429 RVA: 0x0000B2DC File Offset: 0x000094DC
 		public static void Dump(TextWriter writer)
 		{
 			writer.Write("{");
-			GameObject[] array = global::UnityEngine.Object.FindObjectsOfType<GameObject>();
+			GameObject[] array = UnityEngine.Object.FindObjectsOfType<GameObject>();
 			int num = 0;
 			foreach (GameObject gameObject in array)
 			{
@@ -91,7 +86,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			writer.Write("}");
 		}
 
-		// Token: 0x060001AE RID: 430 RVA: 0x0000B340 File Offset: 0x00009540
 		public static void ExportToCollada(string path, Transform root)
 		{
 			using (StreamWriter streamWriter = File.CreateText(path))
@@ -102,7 +96,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x060001AF RID: 431 RVA: 0x0000B390 File Offset: 0x00009590
 		public static string[] GetLayerNames(int mask)
 		{
 			List<string> list = new List<string>();
@@ -119,31 +112,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 				select m).ToArray<string>();
 		}
 
-		// Token: 0x060001B0 RID: 432 RVA: 0x00003303 File Offset: 0x00001503
-		public static Material GetMaterial()
-		{
-			return new Material("Shader \"Unlit/Transparent\" {\n                Properties {\n                    _MainTex (\"Base (RGB)\", 2D) = \"white\" {}\n                }\n                SubShader {\n\t                Tags {\"Queue\"=\"Overlay\" \"IgnoreProjector\"=\"True\" \"RenderType\"=\"Transparent\"}\n                    Pass {\n                        ZTest Always\n                        Lighting Off\n                        SetTexture [_MainTex] { combine texture }\n                    }\n                }\n            }");
-		}
-
-		// Token: 0x060001B1 RID: 433 RVA: 0x0000330F File Offset: 0x0000150F
-		public static Material GetColorMaterial()
-		{
-			return new Material("Shader \"Unlit/Transparent Color\" {\n                Properties {\n                    _Color (\"Main Color\", COLOR) = (1,1,1,1)\n                }\n                SubShader {\n\t                Tags {\"Queue\"=\"Overlay\" \"IgnoreProjector\"=\"True\" \"RenderType\"=\"Transparent\"}\n                    \n                    Color [_Color]\n                    Pass {\n                        ZTest Always\n                        Lighting Off\n                        Blend SrcAlpha OneMinusSrcAlpha\n                    }\n                }\n            }");
-		}
-
-		// Token: 0x060001B2 RID: 434 RVA: 0x0000331B File Offset: 0x0000151B
-		public static Material GetTransparentMaterial()
-		{
-			return new Material("Shader \"Unlit/Transparent\" {\n                Properties {\n                    _MainTex (\"Base (RGB)\", 2D) = \"white\" {}\n                }\n                SubShader {\n\t                Tags {\"Queue\"=\"Overlay+1000\" \"IgnoreProjector\"=\"True\" \"RenderType\"=\"Transparent\"}\n                    Pass {\n                        ZTest Always\n                        Lighting Off\n                        AlphaTest Greater 0.1\n                        Blend SrcAlpha OneMinusSrcAlpha\n                        SetTexture [_MainTex] { combine texture }\n                    }\n                }\n            }");
-		}
-
-		// Token: 0x060001B3 RID: 435 RVA: 0x00003327 File Offset: 0x00001527
-		public static Material GetTransparentMaterial2()
-		{
-			return new Material("Shader \"Unlit/Transparent\" {\n                Properties {\n                    _MainTex (\"Base (RGB)\", 2D) = \"white\" {}\n                    _SubTex (\"Base (RGB)\", 2D) = \"white\" {}\n                }\n                SubShader {\n\t                Tags {\"Queue\"=\"Overlay+1000\" \"IgnoreProjector\"=\"True\" \"RenderType\"=\"Transparent\"}\n                    Pass {\n                        ZTest Always\n                        Lighting Off\n                        AlphaTest Greater 0.1\n                        Blend SrcAlpha OneMinusSrcAlpha\n                        SetTexture [_MainTex] { combine texture, texture + texture }\n                        SetTexture [_SubTex] { combine texture lerp(texture) previous }\n\n                    }\n                }\n            }");
-		}
-
-		// Token: 0x060001B4 RID: 436 RVA: 0x0000B418 File Offset: 0x00009618
 		public static Texture2D LoadImage(string filePath)
 		{
 			filePath = Path.Combine(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Images"), filePath);
@@ -161,20 +129,19 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return texture2D;
 		}
 
-		// Token: 0x060001B5 RID: 437 RVA: 0x0000B480 File Offset: 0x00009680
 		public static void ShowTransformMarker(Transform parent)
 		{
 			Transform transform = parent.Find("TransformMarker");
 			if (transform == null)
 			{
 				transform = new GameObject("TransformMarker").transform;
-				GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				GameObject gameObject = GameObject.CreatePrimitive((PrimitiveType)3);
 				gameObject.transform.localScale = new Vector3(0.05f, 0.001f, 0.001f);
 				gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
-				GameObject gameObject2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				GameObject gameObject2 = GameObject.CreatePrimitive((PrimitiveType)3);
 				gameObject2.transform.localScale = new Vector3(0.001f, 0.05f, 0.001f);
 				gameObject2.GetComponent<MeshRenderer>().material.color = Color.green;
-				GameObject gameObject3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+				GameObject gameObject3 = GameObject.CreatePrimitive((PrimitiveType)3);
 				gameObject3.transform.localScale = new Vector3(0.001f, 0.001f, 0.05f);
 				gameObject3.GetComponent<MeshRenderer>().material.color = Color.blue;
 				gameObject.transform.parent = transform;
@@ -189,7 +156,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x060001B6 RID: 438 RVA: 0x0000B604 File Offset: 0x00009804
 		private static void WriteNode(TextWriter writer, Transform node)
 		{
 			node.name.Contains("_J_");
@@ -210,7 +176,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			writer.Write("</node>");
 		}
 
-		// Token: 0x060001B7 RID: 439 RVA: 0x0000B6D8 File Offset: 0x000098D8
 		public static string GetHierarchyPath(Transform self)
 		{
 			string text = self.gameObject.name;
@@ -223,7 +188,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return text;
 		}
 
-		// Token: 0x060001B8 RID: 440 RVA: 0x00003333 File Offset: 0x00001533
 		public static void PrintHierarchyPath(Transform self)
 		{
 			Debug.LogWarning(DebugHelper.GetHierarchyPath(self));

@@ -1,0 +1,216 @@
+GripMovePlugin v0.8.9
+(Additional HTC VIVE Controller / Oculus Touch plugin)
+
+[Features]
+This plugin adds an additional control mode "DIRECT" for HTC VIVE controller / Oculus Touch.
+For Oculus Touch, see [Oculus Touch] section.  
+
+"DIRECT" mode is activated by holding "Application Menu" button 1.5 seconds (now configurable).
+After that the mode is activated by using "Application Menu" button.
+
+While in "DIRECT" mode, you can: 
+ - Move camera by VIVE controller directly.
+  While holding "Trigger" (or "Grip") button of the VIVE controller, you can move yourself by moving your controller.
+
+ - Floating GUI Screen 
+  GUI screen can be grabbed by holding "Grip" (or "Trigger") of the VIVE controller, then be moved and placed anywhere you want.
+  You can set cursor position by touching the GUI screen by VIVE controller, or moving cursor by touching the VIVE Touch Pad. 
+  You can click by clicking the VIVE controller Touch Pad (Left Side: Left button, Right Side: Right button).
+
+ - Move to Head
+  When you press Move to Head button (Touchpad or the other configured) while holding the Move Camera button (Trigger or Grip)
+  The camera is moved to the man's head position (like first person).    
+
+ - Handy Yotogi Command tool - DIRECT(com) mode (new in v0.4)
+  Pressing Menu button with holding the Grip button (or other configured button), the mode is toggled between DIRECT / DIRECT(com) mode.
+  You can select Yotogi command by touchpad (x-axis swipe) and run the command by pressing down the Touchpad.
+  Even while in this mode, you can directly touch GUI screen to select item and click it, however, you may not be able to move mouse cursor by touchpad.
+
+ - IK (Inversive Kinematics) tool for official Photo mode (new in v0.5.0)
+  In the official Photo mode, by pressing Menu button with holding the Grip button (or other configured button), the mode is toggled between DIRECT / DIRECT(IK) mode.
+  You can grip the IK marker and move it to pose your maid as you want.
+  The IK marker will be hidden if you click the Touchpad in this mode. 
+  The positions you can move are, Finger, Hand (wrist), Forearm, UpperArm, Clavicle, Neck (rotation), Spine-Spin1a (rotation), Thigh (rotation), Calf and Foot.  
+  (new in v0.5.5) Added _IK_ node handles for Maid item position/rotation control. Those handles are shown as green sphere.
+  (new in v0.6.0) Added a new plugin CM3D2.PhotoIKBase.Plugin that enables loading saved XML data in the non-VR version Photo mode.
+
+  [Note for Official "Pose Editor"]
+  In this version, the GripMovePlugin respects the official Pose Editor configuration.
+  When you move IK node, the "Pose Edit" is automatically turned "On".
+
+  [CAUTION]
+  In this mode, I added additional save data which includes IK node position/rotation information, into the Photo save data (which saved into <CM3D2>/PhotoModeData/SaveData).
+  The saved Photo data can be opened with the vanilla CM3D2, however, it is recommended to use separated save data for this mode.
+
+ - Maid Direct Touch framework (new in v0.6.0)
+  Framework code is added to develop direct touch event handling MOD for VIVE VR.
+  Please see CM3D2.VIVEDirectTouchAddon.Plugin as the sample of the implementation.
+
+  Touch size can be adjusted by adding the following settings into the "gripmoveplugin.ini" file. 
+   DirectTouchTool_Size_VAGINA=0.03
+   DirectTouchTool_Size_ANAL=0.03
+   DirectTouchTool_Size_HIP=0.12
+   DirectTouchTool_Size_MUNE=0.12
+   DirectTouchTool_Size_HAIR=0.13
+   DirectTouchTool_Size_MOUTH=0.03
+   DirectTouchTool_Size_EYE=0.04
+   DirectTouchTool_Size_HARA=0.1
+   DirectTouchTool_Size_KATA=0.08
+   DirectTouchTool_Size_HAND=0.08
+   DirectTouchTool_Size_MOMO=0.1
+   DirectTouchTool_Size_FOOT=0.08
+
+ - VIVE Model Replace Tool (new in v0.6.1)
+  While in DIRECT mode, you can swtch the VIVE model by pressing Touchpad with holding the Grip button.
+  By default, you can use Hand (extracted from mbody in runtime) as well as Pink Vibe (as a sample of custom model).
+  Using "gripmove_model.ini" you can configure the detailed setting. 
+   - Hand<xxx> - Configure Hand color, position and rotation. 
+  You can add any of custom models (CM3D2 .model format) in the config file. 
+   - CustomModelCount  number of custom models.
+   - CustomModel_<#>_ID ID of the model (should be identical)
+   - CustomModel_<#>_Label Label of the model (not in use at this version)
+   - CustomModel_<#>_Model .model file name (CM3D2 .model format)
+   - CustomModel_<#>_Pos_X, Pos_Y, Pos_Z  Adjustment of position of the model
+   - CustomModel_<#>_Rot_X, Rot_Y, Rot_Z  Adjustment of rotation of the model
+   - CustomModel_<#>_HidePointer  Set True if you want to hide DIRECT mode pointer (sphere) and mode text label
+   - CustomModel_<#>_EnabledHand  Set "L", "R" or "LR" if you enable the model only left hand, only right hand or both hands.
+
+ - Runtime Configuration menu (new in v0.7.0)
+  You can now set the following configuration at runtime through new menu.
+     Disable/Enable all move functionality by trigger (or grip).
+     Disable/Enable XZ rotation, and reset the rotation.
+     Disable/Enable Y axis move.
+     Disable/Enable Grab (official) when in DIRECT(IK) mode.
+     Disable/Enable Grab (official) when in DIRECT mode (including IK mode).
+
+[Oculus Touch]
+Oculus Touch control is mapped as the followings:
+
+VIVE controller        <-> Oculus Touch    
+
+Application Menu       <-> Y button / B button
+Trigger                <-> Index trigger
+Grip                   <-> Hand (middle finger) trigger
+Touchpad (click/touch) <-> X button /A button
+Touchpad (Axis)        <-> Thumb stick
+
+Pressing on the "Thumb stick" on Oculus Touch is mapped to mouse "right click".
+Note: In v0.8.0, "DIRECT (com)" mode does not work.
+
+[Updates]
+v0.8.9
+ - Fixed Oculus Touch behaviour in vacance mode.
+v0.8.8
+ - Work with official patch 1.50
+v0.8.7
+ - Work with VR Vacation pack DLC (official patch 1.49)
+v0.8.6
+ - Work with VR beta patch 1.34 (official 1.48)
+ - Yotogi Command Tool may work with Oculus Touch.
+v0.8.5
+ - Work with VR beta patch 1.33 (official 1.47)
+v0.8.4
+ - Work with VR beta patch 1.31 (official 1.46)
+v0.8.0
+ - Work with VR beta patch 1.28 (official 1.43)
+ - Added Oculus Touch support (for limitations, see Oculus Touch section)
+ - Fixed Direct Touch framework (debug size fix, added Oculus Touch support)
+v0.7.3
+ - Work with VR beta patch 1.26 (official 1.40)
+ - Performance fix in Photo scene.
+ - Performance fix in Yotogi scene (NPE on DirectTouchTool).
+v0.7.2
+ - Fixed Grip behavior (to support official VR beta patch 1.24).
+ - Added new option to disable Grab when DIRECT mode active.
+v0.7.1
+ - To support official VR beta patch 1.24.
+v0.7.0
+ - Requires Official patch v1.34 (Pose Edit mode)
+ - Added Gear Menu for runtime configuration.
+ - Updated IK save data handling logic.
+ - Disabled IK tool in Edit mode.
+ - Activate DIRECT mode at startup.
+ - Changed default GUI Screen location.  
+v0.6.5a
+ - Fixed a defect in Yotogi tool ( DIRECT(com) mode) , which one click sometimes executes a command multiple times.
+v0.6.5
+ - Direct Touch framework: Added MaidTouchArea (EYE, KATA, HAND, MOMO, FOOT and CUSTOM) - screenshot_005.jpg
+ - Direct Touch framework: Added a new API to add custom MaidTouchArea (DirectTouchTool.AddCustomMaidTouchArea)  
+v0.6.4
+ - Disabled grip move when other buttons (Touchpad, Grip ) pressed or touched.   
+v0.6.3
+ - Added workaround logic to avoid Photo Mode save error, when a body MOD does not have some of predefined IK bones.
+v0.6.2
+ - Added AddOnStayHandler() method to Direct Touch Tool.
+ - Bugfix - pointer and mode text is hidden when DIRECT mode activated.
+v0.6.1a
+ - Bugfix (loaded replace model remain on floor)
+v0.6.1
+ - Added a new VIVE Model Replace Tool
+ - Fixed a bug in Maid Direct Touch framework
+v0.6.0
+ - Added a new Maid Direct Touch framework code.
+ - Photo mode IK data save/load plugin (CM3D2.PhotoIKBase.Plugin) for non-VR runtime.
+v0.5.5
+ - Added Maid Item rotation/position control in IK tool.
+v0.5.4a
+ - Hide cursor pointer marker when the mode changed to normal mode (GRAB, CAMERA, etc.).
+v0.5.4
+ - Fix to work with VR patch 1.19 (do work with the new camera mode). 
+ - IK markers are shown as transparent object through character. 
+v0.5.3a (alpha)
+ - Bugfix (pointer lost when scene changed). 
+v0.5.3 (alpha)
+ - Bugfix (performance). Removed unnecessary check. Improved general performance.
+v0.5.2 (alpha)
+ - Fixed for better performance on IK enabled mode.
+v0.5.1b (alpha)
+ - Fixed IK enabled scene IDs for Chu-B lip ver.
+ - Added CM3D2OHVRx64.exe to PluginFilter so that the plugin run on Chu-B lip ver. I can't test is so it may work or may not.
+v0.5.0 (alpha)
+ - Added IK mode into the official Photo mode (you can use in Edit mode as well but the IK node is not saved in the Edit mode).
+v0.4.1
+ - Now Move Self by Trigger is disabled when you are grabbing your maid in Edit mode.
+v0.4.0
+ - Added handy Yotogi Command Tool - DIRECT (com) mode.
+ - Added multiple configuration parameters, e.g. ActivateOrResetSecs which controlls the time need to activate DIRECT mode (or reset GUI screen position).
+ - Adjusts some configuration parameters.
+v0.3.0
+ - Added Move to Head feature
+ - Added multiple configuration parameters (see Config/gripmoveplugin.ini file for details)
+v0.2.0
+ - Fixed cursor control logic (Touchpad control and Direct screen access is conflicted. Now the direct screen access wins if the controller is close enough to the screen.) 
+ - Added configuration file (ini file) and configuration entry to configure buttons used.
+v0.1.0
+ - Initial Release
+
+
+[Configuration]
+There are several configuration options available in "UnityInjector/Config/gripmoveplugin.ini" file.
+ e.g. If you prefer to use Grip to move yourself and Trigger to move screen, configure as the following. 
+ [GripMovePlugin]
+ #Move self by grip, and move GUI screen by Trigger (v0.1.0)
+ MoveSelfButton=Grip 
+ MoveScreenButton=Trigger 
+ MoveToHeadButton=Touchpad 
+ 
+ #Bigger screen
+ ScreenSize=0.4
+
+ #Unlock the x / z rotation (not recommend)
+ LockRotateXZ=false
+
+[How to install]
+- Require UnityInjector.
+- Place "UnityInjector" directory into your UnityInjector dir.
+
+[How to uninstall]
+- Delete "CM3D2.GripMovePlugin.Plugin.dll"
+- Delete "CM3D2.PhotoIKBase.Plugin.dll"
+- Delete "Config/gripmoveplugin.ini"
+- Delete "Config/photoikbaseplugin.ini"
+
+
+[Thanks]
+Many Thanks to EusthEnoptEron who shared a source code of a unity plugin mod architecture in github.
+Also Thanks to neguse11 who shared source code of SkillCommandShortCut mod in github.

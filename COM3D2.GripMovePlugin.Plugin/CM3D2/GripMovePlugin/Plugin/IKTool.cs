@@ -9,10 +9,8 @@ using UnityEngine;
 
 namespace CM3D2.GripMovePlugin.Plugin
 {
-	// Token: 0x02000040 RID: 64
 	public class IKTool : MonoBehaviour
 	{
-		// Token: 0x0600025A RID: 602 RVA: 0x0000F4B0 File Offset: 0x0000D6B0
 		public void ApplyLoadedIKNodes()
 		{
 			if (this.maidBones == null || this.maidBones.Count == 0)
@@ -24,7 +22,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 				foreach (string text in this.maidLoadIKPos.Keys)
 				{
 					Maid maid = this.FindMaidByGUID(text);
-					if (maid != null && (!(this.poseEditWindow != null) || bool.Parse(this.poseEditWindow.GetMaidStoreData(maid)["use"])))
+					if (maid != null && (this.poseEditWindow == null || bool.Parse(this.poseEditWindow.GetMaidStoreData(maid)["use"])))
 					{
 						Dictionary<string, Transform> dictionary = this.maidBones[maid];
 						Dictionary<string, Vector3> dictionary2 = this.maidLoadIKPos[text];
@@ -56,12 +54,10 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.maidLoadIKRot = new Dictionary<string, Dictionary<string, Quaternion>>();
 		}
 
-		// Token: 0x0600025B RID: 603 RVA: 0x000024BB File Offset: 0x000006BB
 		private void Awake()
 		{
 		}
 
-		// Token: 0x0600025C RID: 604 RVA: 0x0000F6AC File Offset: 0x0000D8AC
 		private void CleanupIKXML(XElement xml)
 		{
 			List<XElement> list = new List<XElement>();
@@ -75,7 +71,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x0600025D RID: 605 RVA: 0x00003BC7 File Offset: 0x00001DC7
 		private void ClearCache()
 		{
 			this.maidBones = new Dictionary<Maid, Dictionary<string, Transform>>();
@@ -83,7 +78,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.maidBoneLastRot = new Dictionary<Maid, Dictionary<string, Quaternion>>();
 		}
 
-		// Token: 0x0600025E RID: 606 RVA: 0x00003BEA File Offset: 0x00001DEA
 		public static IKTool Create()
 		{
 			if (IKTool.instance != null)
@@ -92,11 +86,10 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 			GameObject gameObject = new GameObject("IKTool");
 			IKTool.instance = gameObject.AddComponent<IKTool>();
-			global::UnityEngine.Object.DontDestroyOnLoad(gameObject);
+			UnityEngine.Object.DontDestroyOnLoad(gameObject);
 			return IKTool.instance;
 		}
 
-		// Token: 0x0600025F RID: 607 RVA: 0x0000F744 File Offset: 0x0000D944
 		private Material CreateForceDrawMaterial()
 		{
 			Material material2;
@@ -116,7 +109,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return material2;
 		}
 
-		// Token: 0x06000260 RID: 608 RVA: 0x00003C1E File Offset: 0x00001E1E
 		private IEnumerator DelayedApplyLoadedIKNodes()
 		{
 			yield return new WaitForSeconds(5f);
@@ -124,7 +116,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			yield break;
 		}
 
-		// Token: 0x06000261 RID: 609 RVA: 0x0000F79C File Offset: 0x0000D99C
 		public void EnableIKMode(bool markerIsEnable)
 		{
 			if (!markerIsEnable && !this.markerIsEnable)
@@ -151,7 +142,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.VisibleIKNodes();
 		}
 
-		// Token: 0x06000262 RID: 610 RVA: 0x0000F7FC File Offset: 0x0000D9FC
 		private void FindAndUpdateIKWithMarker(Transform t, Maid maid)
 		{
 			if (t.name != null && t.name.StartsWith("__IK__Marker__") && t.localPosition != Vector3.zero && t.localRotation != Quaternion.identity)
@@ -164,7 +154,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000263 RID: 611 RVA: 0x0000F870 File Offset: 0x0000DA70
 		private void FindIKAndInsertMarker(Maid maid)
 		{
 			Dictionary<string, Transform> dictionary = new Dictionary<string, Transform>();
@@ -182,10 +171,10 @@ namespace CM3D2.GripMovePlugin.Plugin
 					dictionary2[transform.name] = transform.localPosition;
 					dictionary3[transform.name] = transform.localRotation;
 					string text2 = "__IK__Marker__" + transform.name;
-					Transform transform2 = transform.FindChild(text2);
+					Transform transform2 = transform.Find(text2);
 					if (transform2 == null)
 					{
-						GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+						GameObject gameObject = GameObject.CreatePrimitive(0);
 						if (this.markerShowOverlay)
 						{
 							if (this.markerSharedMaterial == null)
@@ -233,7 +222,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000264 RID: 612 RVA: 0x0000FB34 File Offset: 0x0000DD34
 		private Maid FindMaidByGUID(string guid)
 		{
 			CharacterMgr characterMgr = GameMain.Instance.CharacterMgr;
@@ -248,7 +236,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return null;
 		}
 
-		// Token: 0x06000265 RID: 613 RVA: 0x0000FB84 File Offset: 0x0000DD84
 		private PhotoWindowManager FindPhotoWindowManagerInScene()
 		{
 			GameObject gameObject = GameObject.Find("UI Root/MainScreen/PhotoWindowManager");
@@ -259,22 +246,20 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return gameObject.GetComponent<PhotoWindowManager>();
 		}
 
-		// Token: 0x06000266 RID: 614 RVA: 0x0000FBB0 File Offset: 0x0000DDB0
 		private void HideHitSphere()
 		{
-			foreach (TBody tbody in global::UnityEngine.Object.FindObjectsOfType<TBody>())
+			foreach (TBody tbody in UnityEngine.Object.FindObjectsOfType<TBody>())
 			{
-				foreach (MeshRenderer meshRenderer in global::UnityEngine.Object.FindObjectsOfType<MeshRenderer>())
+				foreach (MeshRenderer meshRenderer in UnityEngine.Object.FindObjectsOfType<MeshRenderer>())
 				{
 					if (meshRenderer.gameObject.name.StartsWith("__dummy_hitsphere_view"))
 					{
-						global::UnityEngine.Object.Destroy(meshRenderer.gameObject);
+						UnityEngine.Object.Destroy(meshRenderer.gameObject);
 					}
 				}
 			}
 		}
 
-		// Token: 0x06000267 RID: 615 RVA: 0x00003C2D File Offset: 0x00001E2D
 		private IEnumerator HookSaveLoadCoroutine()
 		{
 			for (;;)
@@ -301,13 +286,11 @@ namespace CM3D2.GripMovePlugin.Plugin
 				}
 				yield return new WaitForSeconds(0.5f);
 			}
-			yield break;
 		}
 
-		// Token: 0x06000268 RID: 616 RVA: 0x0000FC14 File Offset: 0x0000DE14
 		private void InsertSkirtHitSphereForHair()
 		{
-			TBody[] array = global::UnityEngine.Object.FindObjectsOfType<TBody>();
+			TBody[] array = UnityEngine.Object.FindObjectsOfType<TBody>();
 			Material[] array2 = new Material[5];
 			for (int i = 0; i < 5; i++)
 			{
@@ -364,7 +347,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 							{
 								THair1 thair = list[k];
 								streamWriter.WriteLine(string.Format("{0}", thair.root.position.ToString()));
-								GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+								GameObject gameObject = GameObject.CreatePrimitive(0);
 								gameObject.name = "__dummy_hitsphere_view";
 								gameObject.transform.position = thair.root.position;
 								gameObject.transform.localScale = Vector3.one * 0.02f;
@@ -389,7 +372,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 								for (int n = 0; n < thair3.hplist.Count; n += 2)
 								{
 									THp thp = thair3.hplist[n];
-									GameObject gameObject2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+									GameObject gameObject2 = GameObject.CreatePrimitive(0);
 									gameObject2.name = "__dummy_hitsphere_view";
 									gameObject2.transform.position = thp.t.position;
 									gameObject2.transform.localScale = Vector3.one * (float)(n + 1) * 0.01f;
@@ -453,13 +436,11 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000269 RID: 617 RVA: 0x00003C3C File Offset: 0x00001E3C
 		public bool IsIKMarkerEnabled()
 		{
 			return this.markerIsEnable;
 		}
 
-		// Token: 0x0600026A RID: 618 RVA: 0x000102D4 File Offset: 0x0000E4D4
 		public void OnDeserializeWithIK(XElement xml)
 		{
 			this.ClearCache();
@@ -468,7 +449,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.maidLoadIKRot = new Dictionary<string, Dictionary<string, Quaternion>>();
 			foreach (XElement xelement in xcontainer.Elements())
 			{
-				if (!(xelement.Name != "Maid"))
+				if (xelement.Name == "Maid")
 				{
 					string value = xelement.Attribute("guid").Value;
 					Dictionary<string, Vector3> dictionary = new Dictionary<string, Vector3>();
@@ -498,7 +479,8 @@ namespace CM3D2.GripMovePlugin.Plugin
 									float num4 = float.Parse(xelement4.Attribute("rx").Value);
 									float num5 = float.Parse(xelement4.Attribute("ry").Value);
 									float num6 = float.Parse(xelement4.Attribute("rz").Value);
-									Vector3 vector = new Vector3(num, num2, num3);
+									Vector3 vector;
+									vector = new(num, num2, num3);
 									Quaternion quaternion = Quaternion.Euler(num4, num5, num6);
 									dictionary[value2] = vector;
 									dictionary2[value2] = quaternion;
@@ -515,7 +497,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			base.StartCoroutine("DelayedApplyLoadedIKNodes");
 		}
 
-		// Token: 0x0600026B RID: 619 RVA: 0x000105DC File Offset: 0x0000E7DC
 		private void OnIKMarkerMoved(MonoBehaviour ikMarker)
 		{
 			Maid componentInParent = ikMarker.transform.GetComponentInParent<Maid>();
@@ -529,7 +510,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.OnIKMarkerMoved(transform, componentInParent);
 		}
 
-		// Token: 0x0600026C RID: 620 RVA: 0x00010678 File Offset: 0x0000E878
 		private void OnIKMarkerMoved(Transform marker, Maid maid)
 		{
 			Dictionary<string, Transform> dictionary = this.maidBones[maid];
@@ -661,12 +641,11 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x0600026D RID: 621 RVA: 0x00010FC8 File Offset: 0x0000F1C8
 		private void OnLevelWasLoaded(int level)
 		{
 			base.StopAllCoroutines();
-			this.poseEditWindow = global::UnityEngine.Object.FindObjectOfType<PoseEditWindow>();
-			this.placementWindow = global::UnityEngine.Object.FindObjectOfType<PlacementWindow>();
+			this.poseEditWindow = UnityEngine.Object.FindObjectOfType<PoseEditWindow>();
+			this.placementWindow = UnityEngine.Object.FindObjectOfType<PlacementWindow>();
 			this.hookPhotoSaveLoad = false;
 			if (!FirstPersonCameraHelper.IsPhotoMode(level))
 			{
@@ -680,7 +659,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.ClearCache();
 		}
 
-		// Token: 0x0600026E RID: 622 RVA: 0x00011024 File Offset: 0x0000F224
 		public XElement OnSerializeWithIK()
 		{
 			Console.WriteLine("Wrote additional data  (IK info)");
@@ -726,7 +704,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 			XElement xelement3 = this.defaultOnSerializeEventHandler();
 			foreach (XElement xelement4 in xelement3.Element("Maids").Elements())
 			{
-				if (!(xelement4.Name != "Maid"))
+				if (xelement4.Name == "Maid")
 				{
 					string value = xelement4.Attribute("guid").Value;
 					this.CleanupIKXML(xelement4);
@@ -739,7 +717,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return xelement3;
 		}
 
-		// Token: 0x0600026F RID: 623 RVA: 0x00011340 File Offset: 0x0000F540
 		private void Start()
 		{
 			this.markerIsVisible = Settings.Instance.GetBoolValue("IKToolShowMarker", true);
@@ -773,13 +750,11 @@ namespace CM3D2.GripMovePlugin.Plugin
 			this.IK_Targets = list.ToArray();
 		}
 
-		// Token: 0x06000270 RID: 624 RVA: 0x00003C44 File Offset: 0x00001E44
 		public void ToggleMarkerVisibility()
 		{
 			this.VisualizeIKMarker(!this.markerIsVisible);
 		}
 
-		// Token: 0x06000271 RID: 625 RVA: 0x000114A8 File Offset: 0x0000F6A8
 		private void Update()
 		{
 			if (!this.hitCheckDebugEnabled)
@@ -788,13 +763,13 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 			try
 			{
-				if (Input.GetKeyUp(KeyCode.F7))
+				if (Input.GetKeyUp((KeyCode)288))
 				{
-					if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+					if (Input.GetKey((KeyCode)304) || Input.GetKey((KeyCode)303))
 					{
 						this.HideHitSphere();
 					}
-					else if (!Input.GetKey(KeyCode.LeftAlt))
+					else if (!Input.GetKey((KeyCode)308))
 					{
 						this.VisualizeHitSphere("hair");
 					}
@@ -803,7 +778,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 						this.VisualizeHitSphere(null);
 					}
 				}
-				if (Input.GetKeyUp(KeyCode.F6))
+				if (Input.GetKeyUp((KeyCode)287))
 				{
 					this.InsertSkirtHitSphereForHair();
 				}
@@ -814,7 +789,6 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000272 RID: 626 RVA: 0x0001153C File Offset: 0x0000F73C
 		public void VisibleIKNodes()
 		{
 			CharacterMgr characterMgr = GameMain.Instance.CharacterMgr;
@@ -829,10 +803,9 @@ namespace CM3D2.GripMovePlugin.Plugin
 			}
 		}
 
-		// Token: 0x06000273 RID: 627 RVA: 0x00011588 File Offset: 0x0000F788
 		private void VisualizeHitSphere(string type)
 		{
-			TBody[] array = global::UnityEngine.Object.FindObjectsOfType<TBody>();
+			TBody[] array = UnityEngine.Object.FindObjectsOfType<TBody>();
 			Material material = new Material(MaterialHelper.GetColorZOrderShader());
 			Color blue = Color.blue;
 			blue.a = 0.3f;
@@ -899,7 +872,7 @@ namespace CM3D2.GripMovePlugin.Plugin
 									array6[4] = thitSphere.len;
 									array6[5] = thitSphere.t.parent.lossyScale.x;
 									streamWriter.WriteLine(string.Format("Sphere: {0}, {1}, {2}, {3}, {4}, {5}", array6));
-									GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+									GameObject gameObject = GameObject.CreatePrimitive(0);
 									gameObject.name = "__dummy_hitsphere_view";
 									gameObject.transform.position = thitSphere.t.position;
 									gameObject.transform.localScale = Vector3.one * thitSphere.len * (1f + _TS.TestVal2 * 2f);
@@ -918,95 +891,66 @@ namespace CM3D2.GripMovePlugin.Plugin
 			Console.WriteLine("THitSphere Count: " + num2);
 		}
 
-		// Token: 0x06000274 RID: 628 RVA: 0x00003C55 File Offset: 0x00001E55
 		public void VisualizeIKMarker(bool markerIsVisible)
 		{
 			this.markerIsVisible = markerIsVisible;
 			this.VisibleIKNodes();
 		}
 
-		// Token: 0x0400019A RID: 410
 		private PhotoWindowManager photoWindowManager;
 
-		// Token: 0x0400019B RID: 411
 		private Func<XElement> defaultOnSerializeEventHandler;
 
-		// Token: 0x0400019C RID: 412
 		private Action<XElement> defaultOnDeserializeEventHandler;
 
-		// Token: 0x0400019D RID: 413
 		private bool hookPhotoSaveLoad;
 
-		// Token: 0x0400019E RID: 414
 		private bool markerIsVisible = true;
 
-		// Token: 0x0400019F RID: 415
 		private bool markerShowOverlay = true;
 
-		// Token: 0x040001A0 RID: 416
 		private float markerOverlayAlpha = 0.4f;
 
-		// Token: 0x040001A1 RID: 417
 		private bool markerIsEnable;
 
-		// Token: 0x040001A2 RID: 418
 		private bool enableFingerIK = true;
 
-		// Token: 0x040001A3 RID: 419
 		private bool enableItemIK = true;
 
-		// Token: 0x040001A4 RID: 420
 		private int refs;
 
-		// Token: 0x040001A5 RID: 421
 		private float markerSize = 0.05f;
 
-		// Token: 0x040001A6 RID: 422
 		private float markerSizeFinger = 0.005f;
 
-		// Token: 0x040001A7 RID: 423
 		private float markerSizeItemIK = 0.01f;
 
-		// Token: 0x040001A8 RID: 424
 		private Material markerSharedMaterial;
 
-		// Token: 0x040001A9 RID: 425
 		private Material markerSharedMaterial_ItemIK;
 
-		// Token: 0x040001AA RID: 426
 		private bool hitCheckDebugEnabled;
 
-		// Token: 0x040001AB RID: 427
 		private Dictionary<Maid, Dictionary<string, Transform>> maidBones = new Dictionary<Maid, Dictionary<string, Transform>>();
 
-		// Token: 0x040001AC RID: 428
 		private Dictionary<Maid, Dictionary<string, Vector3>> maidBoneLastPos = new Dictionary<Maid, Dictionary<string, Vector3>>();
 
-		// Token: 0x040001AD RID: 429
 		private Dictionary<Maid, Dictionary<string, Quaternion>> maidBoneLastRot = new Dictionary<Maid, Dictionary<string, Quaternion>>();
 
-		// Token: 0x040001AE RID: 430
 		private Dictionary<string, Dictionary<string, Vector3>> maidLoadIKPos = new Dictionary<string, Dictionary<string, Vector3>>();
 
-		// Token: 0x040001AF RID: 431
 		private Dictionary<string, Dictionary<string, Quaternion>> maidLoadIKRot = new Dictionary<string, Dictionary<string, Quaternion>>();
 
-		// Token: 0x040001B0 RID: 432
 		public static IKTool instance;
 
-		// Token: 0x040001B1 RID: 433
 		private PoseEditWindow poseEditWindow;
 
-		// Token: 0x040001B2 RID: 434
 		private PlacementWindow placementWindow;
 
-		// Token: 0x040001B3 RID: 435
 		private static MethodInfo m_SetSelectMaid = typeof(PlacementWindow).GetMethod("SetSelectMaid", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod);
 
-		// Token: 0x040001B4 RID: 436
 		private string[] IK_Targets = new string[0];
 
-		// Token: 0x040001B5 RID: 437
 		private string[] IK_Targets_Fingers = new string[]
 		{
 			"Bip01 L Finger0", "Bip01 L Finger01", "Bip01 L Finger02", "Bip01 L Finger0Nub", "Bip01 L Finger1", "Bip01 L Finger11", "Bip01 L Finger12", "Bip01 L Finger1Nub", "Bip01 L Finger2", "Bip01 L Finger21",
@@ -1015,14 +959,12 @@ namespace CM3D2.GripMovePlugin.Plugin
 			"Bip01 R Finger22", "Bip01 R Finger2Nub", "Bip01 R Finger3", "Bip01 R Finger31", "Bip01 R Finger32", "Bip01 R Finger3Nub", "Bip01 R Finger4", "Bip01 R Finger41", "Bip01 R Finger42", "Bip01 R Finger4Nub"
 		};
 
-		// Token: 0x040001B6 RID: 438
 		private string[] IK_Targets_Base = new string[]
 		{
 			"Bip01 R Hand", "Bip01 R UpperArm", "Bip01 R Forearm", "Bip01 R Clavicle", "Bip01 R Foot", "Bip01 R Calf", "Bip01 R Thigh", "Bip01 L Hand", "Bip01 L UpperArm", "Bip01 L Forearm",
 			"Bip01 L Clavicle", "Bip01 L Foot", "Bip01 L Calf", "Bip01 L Thigh", "Bip01 Spine", "Bip01 Spine0a", "Bip01 Spine1", "Bip01 Spine1a", "Bip01 Neck", "Bip01 Head"
 		};
 
-		// Token: 0x040001B7 RID: 439
 		private string[] IK_Targets_IK = new string[]
 		{
 			"_IK_vagina", "_IK_anal", "_IK_hipL", "_IK_hipR", "_IK_hutanari", "_IK_thighL", "_IK_calfL", "_IK_footL", "_IK_thighR", "_IK_calfR",

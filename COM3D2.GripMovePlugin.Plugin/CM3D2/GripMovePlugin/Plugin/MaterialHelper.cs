@@ -3,10 +3,8 @@ using UnityEngine;
 
 namespace CM3D2.GripMovePlugin.Plugin
 {
-	// Token: 0x02000021 RID: 33
 	internal class MaterialHelper
 	{
-		// Token: 0x06000124 RID: 292 RVA: 0x000081BC File Offset: 0x000063BC
 		public static Shader GetColorZOrderShader()
 		{
 			if (MaterialHelper._ColorZOrderShader != null)
@@ -36,10 +34,8 @@ namespace CM3D2.GripMovePlugin.Plugin
 			return shader;
 		}
 
-		// Token: 0x040000C7 RID: 199
 		private static AssetBundle _GripMovePluginResources;
 
-		// Token: 0x040000C8 RID: 200
 		private static Shader _ColorZOrderShader;
 	}
 }

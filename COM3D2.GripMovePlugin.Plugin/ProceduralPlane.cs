@@ -1,12 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
-// Token: 0x02000002 RID: 2
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 public class ProceduralPlane : MonoBehaviour
 {
-	// Token: 0x06000002 RID: 2 RVA: 0x0000232C File Offset: 0x0000052C
 	public void AssignDefaultShader()
 	{
 		base.gameObject.GetComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Unlit/Texture"))
@@ -15,7 +13,6 @@ public class ProceduralPlane : MonoBehaviour
 		};
 	}
 
-	// Token: 0x06000003 RID: 3 RVA: 0x00003DC4 File Offset: 0x00001FC4
 	public void Rebuild()
 	{
 		this.modelMesh = new Mesh
@@ -51,7 +48,8 @@ public class ProceduralPlane : MonoBehaviour
 			for (int j = 0; j < this.numVertexColumns; j++)
 			{
 				int num10 = 0;
-				Vector3 vector = new Vector3((float)j * num2 + num6 + this.bottomLeftOffset.x * (float)(this.numVertexColumns - 1 - j) / (float)(this.numVertexColumns - 1) * (float)(this.numVertexRows - 1 - i) / (float)(this.numVertexRows - 1) + this.bottomRightOffset.x * (float)j / (float)(this.numVertexColumns - 1) * (float)(this.numVertexRows - 1 - i) / (float)(this.numVertexRows - 1) + this.topLeftOffset.x * (float)(this.numVertexColumns - 1 - j) / (float)(this.numVertexColumns - 1) * (float)i / (float)(this.numVertexRows - 1) + this.topRightOffset.x * (float)j / (float)(this.numVertexColumns - 1) * (float)i / (float)(this.numVertexRows - 1), (float)i * num3 + num7 + this.bottomLeftOffset.y * (float)(this.numVertexColumns - 1 - j) / (float)(this.numVertexColumns - 1) * (float)(this.numVertexRows - 1 - i) / (float)(this.numVertexRows - 1) + this.bottomRightOffset.y * (float)j / (float)(this.numVertexColumns - 1) * (float)(this.numVertexRows - 1 - i) / (float)(this.numVertexRows - 1) + this.topLeftOffset.y * (float)(this.numVertexColumns - 1 - j) / (float)(this.numVertexColumns - 1) * (float)i / (float)(this.numVertexRows - 1) + this.topRightOffset.y * (float)j / (float)(this.numVertexColumns - 1) * (float)i / (float)(this.numVertexRows - 1) - (this.height - 1f) / 2f + (float)num10, this.distance);
+				Vector3 vector;
+				vector = new((float)j * num2 + num6 + this.bottomLeftOffset.x * (float)(this.numVertexColumns - 1 - j) / (float)(this.numVertexColumns - 1) * (float)(this.numVertexRows - 1 - i) / (float)(this.numVertexRows - 1) + this.bottomRightOffset.x * (float)j / (float)(this.numVertexColumns - 1) * (float)(this.numVertexRows - 1 - i) / (float)(this.numVertexRows - 1) + this.topLeftOffset.x * (float)(this.numVertexColumns - 1 - j) / (float)(this.numVertexColumns - 1) * (float)i / (float)(this.numVertexRows - 1) + this.topRightOffset.x * (float)j / (float)(this.numVertexColumns - 1) * (float)i / (float)(this.numVertexRows - 1), (float)i * num3 + num7 + this.bottomLeftOffset.y * (float)(this.numVertexColumns - 1 - j) / (float)(this.numVertexColumns - 1) * (float)(this.numVertexRows - 1 - i) / (float)(this.numVertexRows - 1) + this.bottomRightOffset.y * (float)j / (float)(this.numVertexColumns - 1) * (float)(this.numVertexRows - 1 - i) / (float)(this.numVertexRows - 1) + this.topLeftOffset.y * (float)(this.numVertexColumns - 1 - j) / (float)(this.numVertexColumns - 1) * (float)i / (float)(this.numVertexRows - 1) + this.topRightOffset.y * (float)j / (float)(this.numVertexColumns - 1) * (float)i / (float)(this.numVertexRows - 1) - (this.height - 1f) / 2f + (float)num10, this.distance);
 				float num11 = Mathf.Lerp(num9 * this.height * vector.x, Mathf.Cos(1.5707964f - vector.x * num8) * this.distance, Mathf.Clamp01(this.curviness));
 				float num12 = Mathf.Sin(1.5707964f - vector.x * num8 * Mathf.Clamp01(this.curviness));
 				int num13 = i * this.numVertexColumns + j;
@@ -82,7 +80,6 @@ public class ProceduralPlane : MonoBehaviour
 		this.modelMesh.RecalculateBounds();
 	}
 
-	// Token: 0x06000004 RID: 4 RVA: 0x000042BC File Offset: 0x000024BC
 	public float TransformX(float x)
 	{
 		float num = (float)Screen.width / (float)Screen.height;
@@ -91,7 +88,6 @@ public class ProceduralPlane : MonoBehaviour
 		return Mathf.Lerp(num * this.height * x, Mathf.Cos(1.5707964f - x * (num2 / num3)) * this.distance, this.curviness);
 	}
 
-	// Token: 0x06000005 RID: 5 RVA: 0x00004314 File Offset: 0x00002514
 	public float TransformZ(float x)
 	{
 		float num = (float)Screen.width / (float)Screen.height;
@@ -99,66 +95,45 @@ public class ProceduralPlane : MonoBehaviour
 		return Mathf.Sin(1.5707964f - x * num2 * this.curviness);
 	}
 
-	// Token: 0x04000001 RID: 1
 	private const int DEFAULT_X_SEGMENTS = 10;
 
-	// Token: 0x04000002 RID: 2
 	private const int DEFAULT_Y_SEGMENTS = 10;
 
-	// Token: 0x04000003 RID: 3
 	private const int MIN_X_SEGMENTS = 1;
 
-	// Token: 0x04000004 RID: 4
 	private const int MIN_Y_SEGMENTS = 1;
 
-	// Token: 0x04000005 RID: 5
 	private const float DEFAULT_WIDTH = 1f;
 
-	// Token: 0x04000006 RID: 6
 	private const float DEFAULT_HEIGHT = 1f;
 
-	// Token: 0x04000007 RID: 7
 	public int xSegments = 10;
 
-	// Token: 0x04000008 RID: 8
 	public int ySegments = 10;
 
-	// Token: 0x04000009 RID: 9
 	public Vector2 topLeftOffset = Vector2.zero;
 
-	// Token: 0x0400000A RID: 10
 	public Vector2 topRightOffset = Vector2.zero;
 
-	// Token: 0x0400000B RID: 11
 	public Vector2 bottomLeftOffset = Vector2.zero;
 
-	// Token: 0x0400000C RID: 12
 	public Vector2 bottomRightOffset = Vector2.zero;
 
-	// Token: 0x0400000D RID: 13
 	public float distance = 1f;
 
-	// Token: 0x0400000E RID: 14
 	private Mesh modelMesh;
 
-	// Token: 0x0400000F RID: 15
 	private MeshFilter meshFilter;
 
-	// Token: 0x04000010 RID: 16
 	public float width = 1f;
 
-	// Token: 0x04000011 RID: 17
 	public float height = 1f;
 
-	// Token: 0x04000012 RID: 18
 	private int numVertexColumns;
 
-	// Token: 0x04000013 RID: 19
 	private int numVertexRows;
 
-	// Token: 0x04000014 RID: 20
 	public float angleSpan = 160f;
 
-	// Token: 0x04000015 RID: 21
 	public float curviness;
 }

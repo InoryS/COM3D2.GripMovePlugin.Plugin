@@ -3,16 +3,13 @@ using UnityEngine;
 
 namespace CM3D2.GripMovePlugin.Plugin
 {
-	// Token: 0x0200000C RID: 12
 	internal class DoubleSidePlane
 	{
-		// Token: 0x06000038 RID: 56 RVA: 0x0000255E File Offset: 0x0000075E
 		public static GameObject Create(GameObject go, Material mat, float zScale)
 		{
 			return DoubleSidePlane.Create(go, mat, 1U, 1U, zScale);
 		}
 
-		// Token: 0x06000039 RID: 57 RVA: 0x00004CF0 File Offset: 0x00002EF0
 		public static GameObject Create(GameObject go, Material mat, uint divX, uint divY, float zScale)
 		{
 			int num = (int)(divX + 1U);
