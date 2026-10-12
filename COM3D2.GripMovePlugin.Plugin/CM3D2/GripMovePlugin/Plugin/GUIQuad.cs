@@ -4,8 +4,6 @@ namespace CM3D2.GripMovePlugin.Plugin;
 
 public class GUIQuad : MoveableGUIObject
 {
-	private static GUIQuad instance;
-
 	private GameObject ovrUIGo;
 
 	private GameObject ovr_screen;
@@ -13,9 +11,9 @@ public class GUIQuad : MoveableGUIObject
 	private MeshRenderer renderer;
 
 	private float screenSize;
-	public static bool Initialized => instance != null;
+	public static bool Initialized => Instance != null;
 
-	public static GUIQuad Instance => instance;
+	public static GUIQuad Instance { get; private set; }
 
 	private void Awake()
 	{
@@ -51,9 +49,9 @@ public class GUIQuad : MoveableGUIObject
 
 	public static GUIQuad Create()
 	{
-		if (instance != null)
+		if (Instance != null)
 		{
-			return instance;
+			return Instance;
 		}
 
 		GameObject gameObject = CM2COM.FindOvrScreen();
@@ -63,7 +61,7 @@ public class GUIQuad : MoveableGUIObject
 		}
 
 		GUIQuad guiquad = DoubleSidePlane.Create(null, null, 0f).AddComponent<GUIQuad>();
-		instance = guiquad;
+		Instance = guiquad;
 		guiquad.name = "GUIQuad";
 		guiquad.ovr_screen = gameObject;
 		guiquad.setMeterial(gameObject.GetComponentInChildren<MeshRenderer>().material.mainTexture);
