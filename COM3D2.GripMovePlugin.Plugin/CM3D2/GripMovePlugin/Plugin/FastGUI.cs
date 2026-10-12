@@ -1,17 +1,15 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+internal class FastGUI : MonoBehaviour
 {
-	internal class FastGUI : MonoBehaviour
+	private void OnGUI()
 	{
-		private void OnGUI()
+		GUI.depth = 1000;
+		if (Event.current.type == (EventType)7)
 		{
-			GUI.depth = 1000;
-			if (Event.current.type == (EventType)7)
-			{
-				base.SendMessage("OnBeforeGUI");
-			}
+			SendMessage("OnBeforeGUI");
 		}
 	}
 }

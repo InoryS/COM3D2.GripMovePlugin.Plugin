@@ -1,70 +1,66 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+internal class GripMoveControllerTouch : GripMoveControllerBase
 {
-	internal class GripMoveControllerTouch : GripMoveControllerBase
+	public OVRInput.Controller ovrController;
+
+	public OvrController ovr_controller;
+
+	private DeviceOculusTouchController device;
+
+	public override DeviceWrapper GetController()
 	{
-		public override DeviceWrapper GetController()
+		if (device == null)
 		{
-			if (this.device == null)
-			{
-				this.device = base.gameObject.GetComponent<DeviceOculusTouchController>();
-			}
-			if (this.device == null)
-			{
-				this.device = base.gameObject.AddComponent<DeviceOculusTouchController>();
-				this.device.Init(this.ovrController);
-			}
-			return this.device;
+			device = gameObject.GetComponent<DeviceOculusTouchController>();
 		}
 
-		protected override Transform GetHeadTransform()
+		if (device == null)
 		{
-			return VRContextUtil.FindOVRHeadTransform();
+			device = gameObject.AddComponent<DeviceOculusTouchController>();
+			device.Init(ovrController);
 		}
 
-		protected override OvrGripCollider GetOvrGripCollider()
+		return device;
+	}
+
+	protected override Transform GetHeadTransform() => VRContextUtil.FindOVRHeadTransform();
+
+	protected override OvrGripCollider GetOvrGripCollider()
+	{
+		if (ovr_controller == null)
 		{
-			if (this.ovr_controller == null)
-			{
-				return null;
-			}
-			if (!this.ovr_controller.m_bHandL)
-			{
-				return GameMain.Instance.OvrMgr.ovr_obj.right_controller.grip_collider;
-			}
-			return GameMain.Instance.OvrMgr.ovr_obj.left_controller.grip_collider;
+			return null;
 		}
 
-		protected override Text GetTextForMode()
+		if (!ovr_controller.m_bHandL)
 		{
-			return base.GetComponentInChildren<Text>();
+			return GameMain.Instance.OvrMgr.ovr_obj.right_controller.grip_collider;
 		}
 
-		protected override void PostStart()
+		return GameMain.Instance.OvrMgr.ovr_obj.left_controller.grip_collider;
+	}
+
+	protected override Text GetTextForMode() => GetComponentInChildren<Text>();
+
+	protected override void PostStart()
+	{
+		menuTool = gameObject.GetComponent<MenuToolTouch>();
+		if (menuTool == null)
 		{
-			this.menuTool = base.gameObject.GetComponent<MenuToolTouch>();
-			if (this.menuTool == null)
-			{
-				this.menuTool = base.gameObject.AddComponent<MenuToolTouch>();
-				((MenuToolTouch)this.menuTool).ovrController = this.ovrController;
-			}
+			menuTool = gameObject.AddComponent<MenuToolTouch>();
+			((MenuToolTouch)menuTool).ovrController = ovrController;
 		}
+	}
 
-		protected override void PreUpdate()
+	protected override void PreUpdate()
+	{
+		if (ovr_controller == null)
 		{
-			if (this.ovr_controller == null)
-			{
-				this.ovr_controller = base.GetComponent<OvrController>();
-			}
+			ovr_controller = GetComponent<OvrController>();
 		}
-
-		private DeviceOculusTouchController device;
-
-		public OVRInput.Controller ovrController;
-
-		public OvrController ovr_controller;
 	}
 }

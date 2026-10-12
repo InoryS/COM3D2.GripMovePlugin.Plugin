@@ -3,284 +3,302 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+internal class YotogiCommandTool : MonoBehaviour
 {
-	internal class YotogiCommandTool : MonoBehaviour
+	public Transform headTransform;
+
+	private readonly float commandLineSize = 0.02f;
+
+	private bool alwaysLookAtCamera;
+
+	private Dictionary<GameObject, UIButtonAlias> cache = new();
+
+	private GameObject commandListPlane;
+
+	private float commandToolSize = 1f;
+
+	private GameObject commandUnitGo;
+
+	private int currentCommandIndex = -1;
+
+	private float currentCommandLoc;
+
+	private bool dirty;
+
+	private float maxY;
+
+	private float minY;
+
+	private float scrollSpeed = 1f;
+
+	private UIButtonAlias selectedCommandItem;
+
+	private void Awake()
 	{
-		private void Awake()
+	}
+
+	private void Reset()
+	{
+		cache = new Dictionary<GameObject, UIButtonAlias>();
+		commandUnitGo = null;
+		selectedCommandItem = null;
+		maxY = 0f;
+		minY = 0f;
+		currentCommandIndex = 0;
+		currentCommandLoc = 0f;
+		UpdateCommandListLocation(0f);
+		ClearUIButtonAliasObjects();
+		dirty = false;
+	}
+
+	private void Start()
+	{
+		commandToolSize = Settings.Instance.GetFloatValue("YotogiCommandToolSize", 1f);
+		scrollSpeed = Settings.Instance.GetFloatValue("YotogiCommandToolSpeed", 1f);
+		alwaysLookAtCamera = Settings.Instance.GetBoolValue("YotogiCommandToolLookAtCamera", false);
+		commandListPlane = new GameObject("YotogiCommandListOnHand");
+		commandListPlane.transform.parent = transform;
+		commandListPlane.transform.localPosition = Vector3.zero;
+		commandListPlane.transform.localRotation = Quaternion.identity;
+		commandListPlane.transform.localScale = Vector3.one * commandToolSize;
+		commandListPlane.layer = LayerMask.NameToLayer("Ignore Raycast");
+		Reset();
+	}
+
+	private void Update()
+	{
+		try
 		{
+			Update2();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.StackTrace);
+		}
+	}
+
+	private void OnEnable()
+	{
+		if (commandListPlane != null)
+		{
+			commandListPlane.SetActive(true);
+		}
+	}
+
+	private void OnDisable()
+	{
+		Reset();
+		if (commandListPlane != null)
+		{
+			commandListPlane.SetActive(false);
+		}
+	}
+
+	private void OnLevelWasLoaded(int level) => Reset();
+
+	private void ClearUIButtonAliasObjects()
+	{
+		if (gameObject != null)
+		{
+			UIButtonAlias[] componentsInChildren =
+				transform.gameObject.GetComponentsInChildren<UIButtonAlias>();
+			for (int i = 0; i < componentsInChildren.Length; i++)
+			{
+				Destroy(componentsInChildren[i].gameObject);
+			}
+		}
+	}
+
+	public static YotogiCommandTool Create(Transform baseTransform)
+	{
+		return new GameObject("YotogiCommandTool")
+		{
+			transform =
+			{
+				parent = baseTransform,
+				position = baseTransform.position + baseTransform.right * 0.01f,
+				rotation = Quaternion.LookRotation(-1f * baseTransform.up)
+			},
+			layer = LayerMask.NameToLayer("Ignore Raycast")
+		}.AddComponent<YotogiCommandTool>();
+	}
+
+	private void InstantiateCommandAliases()
+	{
+		string text = "cm:";
+		if (commandUnitGo == null || !commandUnitGo.activeInHierarchy ||
+		    !GameMain.Instance.MainCamera.IsFadeStateNon())
+		{
+			return;
 		}
 
-		private void ClearUIButtonAliasObjects()
+		foreach (object obj in commandUnitGo.transform)
 		{
-			if (base.gameObject != null)
+			var transform = (Transform)obj;
+			if (transform.name != null && transform.name.StartsWith(text) &&
+			    transform.gameObject != null)
 			{
-				UIButtonAlias[] componentsInChildren = base.transform.gameObject.GetComponentsInChildren<UIButtonAlias>();
-				for (int i = 0; i < componentsInChildren.Length; i++)
+				int count = cache.Count;
+				GameObject gameObject = transform.gameObject;
+				if (!cache.ContainsKey(gameObject))
 				{
-					UnityEngine.Object.Destroy(componentsInChildren[i].gameObject);
-				}
-			}
-		}
-
-		public static YotogiCommandTool Create(Transform baseTransform)
-		{
-			return new GameObject("YotogiCommandTool")
-			{
-				transform = 
-				{
-					parent = baseTransform,
-					position = baseTransform.position + baseTransform.right * 0.01f,
-					rotation = Quaternion.LookRotation(-1f * baseTransform.up)
-				},
-				layer = LayerMask.NameToLayer("Ignore Raycast")
-			}.AddComponent<YotogiCommandTool>();
-		}
-
-		private void InstantiateCommandAliases()
-		{
-			string text = "cm:";
-			if (this.commandUnitGo == null || !this.commandUnitGo.activeInHierarchy || !GameMain.Instance.MainCamera.IsFadeStateNon())
-			{
-				return;
-			}
-			foreach (object obj in this.commandUnitGo.transform)
-			{
-				Transform transform = (Transform)obj;
-				if (transform.name != null && transform.name.StartsWith(text) && transform.gameObject != null)
-				{
-					int count = this.cache.Count;
-					GameObject gameObject = transform.gameObject;
-					if (!this.cache.ContainsKey(gameObject))
-					{
-						UIButton component = gameObject.GetComponent<UIButton>();
-						if (component != null)
-						{
-							GameObject gameObject2 = new GameObject("UIButtonAlias_" + transform.name);
-							UIButtonAlias uibuttonAlias = gameObject2.AddComponent<UIButtonAlias>();
-							uibuttonAlias.SetUIButton(component);
-							uibuttonAlias.commandTool = this;
-							this.cache.Add(gameObject, uibuttonAlias);
-							gameObject2.transform.parent = this.commandListPlane.transform;
-							gameObject2.transform.localPosition = new Vector3(0f, 0f, 0f);
-							gameObject2.transform.localRotation = Quaternion.identity;
-							gameObject2.transform.localScale = gameObject2.transform.localScale * this.commandToolSize;
-							if (count % 2 != 0)
-							{
-								this.minY = (float)(-1 * (count + 1) / 2);
-								gameObject2.transform.position += this.commandListPlane.transform.up * this.commandLineSize * this.commandToolSize * this.minY;
-							}
-							else
-							{
-								this.maxY = (float)(count / 2);
-								gameObject2.transform.position += this.commandListPlane.transform.up * this.commandLineSize * this.commandToolSize * this.maxY;
-							}
-							component.gameObject.AddComponent<UIButtonDestroyListerner>().tool = this;
-							this.UpdateCommandListLocation(0f);
-						}
-					}
-				}
-			}
-		}
-
-		public void InvokeCurrentCommand()
-		{
-			if (this.cache.Count == 0 || this.selectedCommandItem == null)
-			{
-				return;
-			}
-			try
-			{
-				GameObject gameObject = this.selectedCommandItem.uiButton.gameObject;
-				if (gameObject.activeInHierarchy)
-				{
-					gameObject.SendMessage("OnClick");
-				}
-			}
-			catch (Exception)
-			{
-			}
-		}
-
-		public bool IsSelected(UIButtonAlias alias)
-		{
-			return this.selectedCommandItem == alias;
-		}
-
-		private void LookAtVRHeadCamera()
-		{
-			if (this.alwaysLookAtCamera)
-			{
-				if (this.headTransform == null)
-				{
-					Component component = CM2COM.FindOvrCamera();
+					UIButton component = gameObject.GetComponent<UIButton>();
 					if (component != null)
 					{
-						this.headTransform = component.gameObject.transform;
+						var gameObject2 = new GameObject("UIButtonAlias_" + transform.name);
+						UIButtonAlias uibuttonAlias = gameObject2.AddComponent<UIButtonAlias>();
+						uibuttonAlias.SetUIButton(component);
+						uibuttonAlias.commandTool = this;
+						cache.Add(gameObject, uibuttonAlias);
+						gameObject2.transform.parent = commandListPlane.transform;
+						gameObject2.transform.localPosition = new Vector3(0f, 0f, 0f);
+						gameObject2.transform.localRotation = Quaternion.identity;
+						gameObject2.transform.localScale =
+							gameObject2.transform.localScale * commandToolSize;
+						if (count % 2 != 0)
+						{
+							minY = -1 * (count + 1) / 2;
+							gameObject2.transform.position += commandListPlane.transform.up *
+							                                  commandLineSize * commandToolSize *
+							                                  minY;
+						}
+						else
+						{
+							maxY = count / 2;
+							gameObject2.transform.position += commandListPlane.transform.up *
+							                                  commandLineSize * commandToolSize *
+							                                  maxY;
+						}
+
+						component.gameObject.AddComponent<UIButtonDestroyListerner>().tool = this;
+						UpdateCommandListLocation(0f);
 					}
 				}
-				if (this.headTransform != null)
+			}
+		}
+	}
+
+	public void InvokeCurrentCommand()
+	{
+		if (cache.Count == 0 || selectedCommandItem == null)
+		{
+			return;
+		}
+
+		try
+		{
+			GameObject gameObject = selectedCommandItem.uiButton.gameObject;
+			if (gameObject.activeInHierarchy)
+			{
+				gameObject.SendMessage("OnClick");
+			}
+		}
+		catch (Exception)
+		{
+		}
+	}
+
+	public bool IsSelected(UIButtonAlias alias) => selectedCommandItem == alias;
+
+	private void LookAtVRHeadCamera()
+	{
+		if (alwaysLookAtCamera)
+		{
+			if (headTransform == null)
+			{
+				Component component = CM2COM.FindOvrCamera();
+				if (component != null)
 				{
-					Vector3 vector = this.headTransform.position - base.transform.position;
-					base.transform.rotation = Quaternion.LookRotation(-1f * vector);
-					return;
+					headTransform = component.gameObject.transform;
 				}
-				base.transform.rotation = Quaternion.LookRotation(-1f * base.transform.parent.up);
 			}
-		}
 
-		private void OnDisable()
+			if (headTransform != null)
+			{
+				Vector3 vector = headTransform.position - transform.position;
+				transform.rotation = Quaternion.LookRotation(-1f * vector);
+				return;
+			}
+
+			transform.rotation = Quaternion.LookRotation(-1f * transform.parent.up);
+		}
+	}
+
+	public void OnUIButtonDestroy(GameObject uiButton)
+	{
+		if (cache.ContainsKey(uiButton))
 		{
-			this.Reset();
-			if (this.commandListPlane != null)
-			{
-				this.commandListPlane.SetActive(false);
-			}
+			dirty = true;
 		}
+	}
 
-		private void OnEnable()
+	private void Update2()
+	{
+		if (dirty)
 		{
-			if (this.commandListPlane != null)
-			{
-				this.commandListPlane.SetActive(true);
-			}
+			Reset();
 		}
 
-		private void OnLevelWasLoaded(int level)
+		if (commandUnitGo == null)
 		{
-			this.Reset();
+			commandUnitGo =
+				GameObject.Find(
+					"/UI Root/YotogiPlayPanel/CommandViewer/SkillViewer/MaskGroup/SkillGroup/CommandParent/CommandUnit");
 		}
 
-		public void OnUIButtonDestroy(GameObject uiButton)
+		if (commandUnitGo != null)
 		{
-			if (this.cache.ContainsKey(uiButton))
-			{
-				this.dirty = true;
-			}
+			InstantiateCommandAliases();
 		}
 
-		private void Reset()
+		LookAtVRHeadCamera();
+	}
+
+	public void UpdateCommandListLocation(float diff)
+	{
+		currentCommandLoc += diff * scrollSpeed;
+		if (currentCommandLoc > maxY + 0.45f)
 		{
-			this.cache = new Dictionary<GameObject, UIButtonAlias>();
-			this.commandUnitGo = null;
-			this.selectedCommandItem = null;
-			this.maxY = 0f;
-			this.minY = 0f;
-			this.currentCommandIndex = 0;
-			this.currentCommandLoc = 0f;
-			this.UpdateCommandListLocation(0f);
-			this.ClearUIButtonAliasObjects();
-			this.dirty = false;
+			currentCommandLoc = maxY + 0.45f;
 		}
 
-		private void Start()
+		if (currentCommandLoc < minY - 0.45f)
 		{
-			this.commandToolSize = Settings.Instance.GetFloatValue("YotogiCommandToolSize", 1f);
-			this.scrollSpeed = Settings.Instance.GetFloatValue("YotogiCommandToolSpeed", 1f);
-			this.alwaysLookAtCamera = Settings.Instance.GetBoolValue("YotogiCommandToolLookAtCamera", false);
-			this.commandListPlane = new GameObject("YotogiCommandListOnHand");
-			this.commandListPlane.transform.parent = base.transform;
-			this.commandListPlane.transform.localPosition = Vector3.zero;
-			this.commandListPlane.transform.localRotation = Quaternion.identity;
-			this.commandListPlane.transform.localScale = Vector3.one * this.commandToolSize;
-			this.commandListPlane.layer = LayerMask.NameToLayer("Ignore Raycast");
-			this.Reset();
+			currentCommandLoc = minY - 0.45f;
 		}
 
-		private void Update()
+		int num = (int)Math.Round(currentCommandLoc);
+		if (num < 0)
 		{
-			try
-			{
-				this.Update2();
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.StackTrace);
-			}
+			currentCommandIndex = -1 * num * 2 - 1;
 		}
-
-		private void Update2()
+		else
 		{
-			if (this.dirty)
-			{
-				this.Reset();
-			}
-			if (this.commandUnitGo == null)
-			{
-				this.commandUnitGo = GameObject.Find("/UI Root/YotogiPlayPanel/CommandViewer/SkillViewer/MaskGroup/SkillGroup/CommandParent/CommandUnit");
-			}
-			if (this.commandUnitGo != null)
-			{
-				this.InstantiateCommandAliases();
-			}
-			this.LookAtVRHeadCamera();
+			currentCommandIndex = num * 2;
 		}
 
-		public void UpdateCommandListLocation(float diff)
+		if (commandListPlane != null)
 		{
-			this.currentCommandLoc += diff * this.scrollSpeed;
-			if (this.currentCommandLoc > this.maxY + 0.45f)
-			{
-				this.currentCommandLoc = this.maxY + 0.45f;
-			}
-			if (this.currentCommandLoc < this.minY - 0.45f)
-			{
-				this.currentCommandLoc = this.minY - 0.45f;
-			}
-			int num = (int)Math.Round((double)this.currentCommandLoc);
-			if (num < 0)
-			{
-				this.currentCommandIndex = -1 * num * 2 - 1;
-			}
-			else
-			{
-				this.currentCommandIndex = num * 2;
-			}
-			if (this.commandListPlane != null)
-			{
-				this.commandListPlane.transform.position = base.transform.position + base.transform.right * 0.06f;
-				this.commandListPlane.transform.position += -1f * this.commandListPlane.transform.up * this.commandLineSize * this.commandToolSize * this.currentCommandLoc;
-			}
-			if (this.cache.Count == 0)
-			{
-				this.selectedCommandItem = null;
-			}
-			try
-			{
-				this.selectedCommandItem = this.cache.ElementAt<KeyValuePair<GameObject, UIButtonAlias>>(this.currentCommandIndex).Value;
-			}
-			catch (Exception)
-			{
-				this.selectedCommandItem = null;
-			}
+			commandListPlane.transform.position = transform.position + transform.right * 0.06f;
+			commandListPlane.transform.position += -1f * commandListPlane.transform.up *
+			                                       commandLineSize * commandToolSize *
+			                                       currentCommandLoc;
 		}
 
-		private GameObject commandUnitGo;
+		if (cache.Count == 0)
+		{
+			selectedCommandItem = null;
+		}
 
-		private GameObject commandListPlane;
-
-		private Dictionary<GameObject, UIButtonAlias> cache = new Dictionary<GameObject, UIButtonAlias>();
-
-		private float maxY;
-
-		private float minY;
-
-		private int currentCommandIndex = -1;
-
-		private float scrollSpeed = 1f;
-
-		private float currentCommandLoc;
-
-		private float commandLineSize = 0.02f;
-
-		private float commandToolSize = 1f;
-
-		private UIButtonAlias selectedCommandItem;
-
-		private bool dirty;
-
-		private bool alwaysLookAtCamera;
-
-		public Transform headTransform;
+		try
+		{
+			selectedCommandItem = cache.ElementAt(currentCommandIndex).Value;
+		}
+		catch (Exception)
+		{
+			selectedCommandItem = null;
+		}
 	}
 }

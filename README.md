@@ -1,7 +1,8 @@
 # COM3D2.GripMovePlugin.Plugin
 
-Modified from the version distributed by [scarletkom](https://x.com/scarletkom) at <https://ux.getuploader.com/scarletkom_mod/download/45>, incorporating some modernization and custom changes.
-
+Modified from the version distributed by [scarletkom](https://x.com/scarletkom)
+at <https://ux.getuploader.com/scarletkom_mod/download/45>, incorporating some modernization and
+custom changes.
 
 ## Notes
 

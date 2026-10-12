@@ -1,15 +1,9 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+internal class UIButtonDestroyListerner : MonoBehaviour
 {
-	internal class UIButtonDestroyListerner : MonoBehaviour
-	{
-		private void OnDestroy()
-		{
-			this.tool.OnUIButtonDestroy(base.gameObject);
-		}
-
-		public YotogiCommandTool tool;
-	}
+	public YotogiCommandTool tool;
+	private void OnDestroy() => tool.OnUIButtonDestroy(gameObject);
 }

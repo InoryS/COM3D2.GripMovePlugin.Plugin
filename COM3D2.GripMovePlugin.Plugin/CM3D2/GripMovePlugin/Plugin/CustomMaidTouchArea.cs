@@ -1,16 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+public class CustomMaidTouchArea
 {
-	public class CustomMaidTouchArea
-	{
-		public string name;
+	public string baseBoneName;
+	public string name;
 
-		public string baseBoneName;
+	public Vector3 position;
 
-		public Vector3 position;
-
-		public float radius;
-	}
+	public float radius;
 }

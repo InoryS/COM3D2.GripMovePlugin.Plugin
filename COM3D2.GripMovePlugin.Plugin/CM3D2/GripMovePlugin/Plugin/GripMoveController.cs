@@ -1,82 +1,77 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+internal class GripMoveController : GripMoveControllerBase
 {
-	internal class GripMoveController : GripMoveControllerBase
+	private DeviceViveController device;
+
+	private ViveController viveController;
+
+	private Transform vrHeadGameViewTrans;
+
+	protected override bool CheckGripMoveIgnore() =>
+		controller.GetTouch(32) || base.CheckGripMoveIgnore();
+
+	public override DeviceWrapper GetController()
 	{
-		protected override bool CheckGripMoveIgnore()
+		if (device == null)
 		{
-			return this.controller.GetTouch(32) || base.CheckGripMoveIgnore();
-		}
-
-		public override DeviceWrapper GetController()
-		{
-			if (this.device == null)
+			SteamVR_TrackedObject component = GetComponent<SteamVR_TrackedObject>();
+			if (component != null)
 			{
-				SteamVR_TrackedObject component = base.GetComponent<SteamVR_TrackedObject>();
-				if (component != null)
+				device = gameObject.GetComponent<DeviceViveController>();
+				if (device == null)
 				{
-					this.device = base.gameObject.GetComponent<DeviceViveController>();
-					if (this.device == null)
-					{
-						this.device = base.gameObject.AddComponent<DeviceViveController>();
-						this.device.Init(component);
-					}
+					device = gameObject.AddComponent<DeviceViveController>();
+					device.Init(component);
 				}
 			}
-			return this.device;
 		}
 
-		protected override Transform GetHeadTransform()
+		return device;
+	}
+
+	protected override Transform GetHeadTransform()
+	{
+		if (vrHeadGameViewTrans == null)
 		{
-			if (this.vrHeadGameViewTrans == null)
+			Component component = CM2COM.FindOvrCamera();
+			if (component != null)
 			{
-				Component component = CM2COM.FindOvrCamera();
-				if (component != null)
-				{
-					this.vrHeadGameViewTrans = component.transform;
-				}
-			}
-			return this.vrHeadGameViewTrans;
-		}
-
-		protected override OvrGripCollider GetOvrGripCollider()
-		{
-			if (this.viveController == null)
-			{
-				return null;
-			}
-			if (!this.viveController.m_bHandL)
-			{
-				return GameMain.Instance.OvrMgr.ovr_obj.right_controller.grip_collider;
-			}
-			return GameMain.Instance.OvrMgr.ovr_obj.left_controller.grip_collider;
-		}
-
-		protected override Text GetTextForMode()
-		{
-			return base.GetComponentInChildren<Text>();
-		}
-
-		protected override void PostStart()
-		{
-			this.menuTool = base.gameObject.GetComponent<MenuTool>() ?? base.gameObject.AddComponent<MenuTool>();
-		}
-
-		protected override void PreUpdate()
-		{
-			if (this.viveController == null)
-			{
-				this.viveController = base.GetComponent<ViveController>();
+				vrHeadGameViewTrans = component.transform;
 			}
 		}
 
-		private DeviceViveController device;
+		return vrHeadGameViewTrans;
+	}
 
-		private Transform vrHeadGameViewTrans;
+	protected override OvrGripCollider GetOvrGripCollider()
+	{
+		if (viveController == null)
+		{
+			return null;
+		}
 
-		private ViveController viveController;
+		if (!viveController.m_bHandL)
+		{
+			return GameMain.Instance.OvrMgr.ovr_obj.right_controller.grip_collider;
+		}
+
+		return GameMain.Instance.OvrMgr.ovr_obj.left_controller.grip_collider;
+	}
+
+	protected override Text GetTextForMode() => GetComponentInChildren<Text>();
+
+	protected override void PostStart() => menuTool =
+		gameObject.GetComponent<MenuTool>() ?? gameObject.AddComponent<MenuTool>();
+
+	protected override void PreUpdate()
+	{
+		if (viveController == null)
+		{
+			viveController = GetComponent<ViveController>();
+		}
 	}
 }

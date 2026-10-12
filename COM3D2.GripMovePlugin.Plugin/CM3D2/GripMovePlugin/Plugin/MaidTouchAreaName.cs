@@ -1,21 +1,18 @@
-﻿using System;
+﻿namespace CM3D2.GripMovePlugin.Plugin;
 
-namespace CM3D2.GripMovePlugin.Plugin
+public enum MaidTouchAreaName
 {
-	public enum MaidTouchAreaName
-	{
-		VAGINA,
-		ANAL,
-		HIP,
-		MUNE,
-		MOUTH,
-		HAIR,
-		HARA,
-		KATA,
-		HAND,
-		MOMO,
-		FOOT,
-		EYE,
-		CUSTOM = 2147483647
-	}
+	VAGINA,
+	ANAL,
+	HIP,
+	MUNE,
+	MOUTH,
+	HAIR,
+	HARA,
+	KATA,
+	HAND,
+	MOMO,
+	FOOT,
+	EYE,
+	CUSTOM = 2147483647
 }

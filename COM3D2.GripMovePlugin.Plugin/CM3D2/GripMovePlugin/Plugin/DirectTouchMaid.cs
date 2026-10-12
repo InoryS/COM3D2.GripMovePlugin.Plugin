@@ -2,53 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+public class DirectTouchMaid : MonoBehaviour
 {
-	public class DirectTouchMaid : MonoBehaviour
+	public Maid maid;
+
+	public List<TouchArea> touchAreas = new();
+
+	private void Awake() => maid = gameObject.GetComponent<TBody>().maid;
+
+	public void AddTouchArea(MaidTouchAreaName areaName, string boneName, float radius,
+		Vector3 position)
 	{
-		public void AddTouchArea(MaidTouchAreaName areaName, string boneName, float radius, Vector3 position)
+		Transform transform = CMT.SearchObjName(maid.body0.transform, boneName);
+		if (transform == null)
 		{
-			Transform transform = CMT.SearchObjName(this.maid.body0.transform, boneName, true);
-			if (transform == null)
-			{
-				Console.WriteLine("AddTouchArea failed. Bone [" + boneName + "] not found.");
-			}
-			TouchArea touchArea = new TouchArea(areaName, transform, radius, position)
-			{
-				maid = this.maid,
-				dtm = this
-			};
-			this.touchAreas.Add(touchArea);
+			Console.WriteLine("AddTouchArea failed. Bone [" + boneName + "] not found.");
 		}
 
-		public void AddTouchArea(string customName, string boneName, float radius, Vector3 position)
+		var touchArea = new TouchArea(areaName, transform, radius, position)
 		{
-			Transform transform = CMT.SearchObjName(this.maid.body0.transform, boneName, true);
-			if (transform == null)
-			{
-				Console.WriteLine("AddTouchArea failed. Bone [" + boneName + "] not found.");
-				return;
-			}
-			TouchArea touchArea = new TouchArea(customName, transform, radius, position)
-			{
-				maid = this.maid,
-				dtm = this
-			};
-			this.touchAreas.Add(touchArea);
-		}
-
-		private void Awake()
-		{
-			this.maid = base.gameObject.GetComponent<TBody>().maid;
-		}
-
-		private void Destroy()
-		{
-			DirectTouchTool.Instance.RemoveDirectTouchMaid(this);
-		}
-
-		public Maid maid;
-
-		public List<TouchArea> touchAreas = new List<TouchArea>();
+			maid = maid, dtm = this
+		};
+		touchAreas.Add(touchArea);
 	}
+
+	public void AddTouchArea(string customName, string boneName, float radius, Vector3 position)
+	{
+		Transform transform = CMT.SearchObjName(maid.body0.transform, boneName);
+		if (transform == null)
+		{
+			Console.WriteLine("AddTouchArea failed. Bone [" + boneName + "] not found.");
+			return;
+		}
+
+		var touchArea = new TouchArea(customName, transform, radius, position)
+		{
+			maid = maid, dtm = this
+		};
+		touchAreas.Add(touchArea);
+	}
+
+	private void Destroy() => DirectTouchTool.Instance.RemoveDirectTouchMaid(this);
 }

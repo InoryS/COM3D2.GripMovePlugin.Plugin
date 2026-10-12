@@ -1,376 +1,379 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Valve.VR;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+internal abstract class GripMoveControllerBase : MonoBehaviour
 {
-	internal abstract class GripMoveControllerBase : MonoBehaviour
+	private const float OVR_GRIP_FORCE_RESET_TIME = 0.1f;
+
+	private static bool lockRotHeadYZ = Settings.Instance.GetBoolValue("LockRotateHeadYZ", false);
+
+	private static bool lockRotXZ = Settings.Instance.GetBoolValue("LockRotateXZ", true);
+
+	private static bool moveToHeadEnabled = true;
+
+	private static bool hideManHeadWhenJump = true;
+
+	private static bool lockMoveY = Settings.Instance.GetBoolValue("LockMoveY", false);
+
+	private static bool moveEnabled = true;
+
+	public GameObject target;
+
+	protected DeviceWrapper controller;
+
+	private float eyePosDeltaForward = 0.05f;
+
+	private float eyePosDeltaUp = 0.1f;
+
+	private float fpModePressTime;
+
+	protected GameObject handle;
+
+	private GameObject head;
+
+	private Transform headTransform;
+
+	private bool m_movingSelf;
+
+	private float m_movingStartTime;
+
+	private Text m_txMode;
+
+	protected GameObject marker;
+
+	protected MenuToolBase menuTool;
+
+	protected EVRButtonId moveScreenButton;
+
+	protected EVRButtonId moveSelfButton;
+
+	protected EVRButtonId moveToHeadButton;
+
+	private OvrGripCollider ovrGripCollider;
+
+	private void Awake()
 	{
-		private void Awake()
+	}
+
+	private void Start()
+	{
+		m_txMode = GetTextForMode();
+		ovrGripCollider = GetComponent<OvrGripCollider>();
+		moveSelfButton = Settings.Instance.GetButton("MoveSelfButton", (EVRButtonId)2);
+		moveToHeadEnabled = Settings.Instance.GetBoolValue("MoveToHeadEnabled", true);
+		hideManHeadWhenJump = Settings.Instance.GetBoolValue("HideManHeadWhenJump", true);
+		moveToHeadButton = Settings.Instance.GetButton("MoveToHeadButton", (EVRButtonId)32);
+		eyePosDeltaUp = Settings.Instance.GetFloatValue("EyePosDeltaUp", 0.1f);
+		eyePosDeltaForward = Settings.Instance.GetFloatValue("EyePosDeltaForward", 0.05f);
+		moveScreenButton = Settings.Instance.GetButton("MoveScreenButton", (EVRButtonId)33);
+		controller = GetController();
+		PostStart();
+	}
+
+	private void Update()
+	{
+		PreUpdate();
+		if (head == null &&
+		    FirstPersonCameraHelper.IsFPSModeEnabled(SceneManager.GetActiveScene().buildIndex))
 		{
+			head = FirstPersonCameraHelper.FindManHead();
 		}
 
-		protected virtual bool CheckGripMoveIgnore()
+		if (ovrGripCollider == null)
 		{
-			foreach (EVRButtonId evrbuttonId in new EVRButtonId[] { (EVRButtonId)2, (EVRButtonId)33, (EVRButtonId)32 })
+			ovrGripCollider = GetOvrGripCollider();
+		}
+
+		if (marker == null)
+		{
+			marker = new GameObject("_marker_" + name);
+			marker.transform.parent = transform.parent;
+			marker.transform.position = transform.position;
+			marker.transform.rotation = transform.rotation;
+		}
+
+		if (handle == null)
+		{
+			handle = new GameObject("_handle_" + name);
+			handle.transform.parent = transform.parent;
+			handle.transform.position = transform.position;
+			handle.transform.rotation = transform.rotation;
+		}
+
+		OVRGripForceResetWhenMoving();
+		bool movingSelf = m_movingSelf;
+		m_movingSelf = false;
+		if (controller != null && !IsOVRGripActiveAndConflicted() && !IsInGrabbing() &&
+		    moveEnabled && IsNewModeAndDirectInactive() && IsInDrawMoveMode() && target != null)
+		{
+			Vector3 vector = marker.transform.position - transform.position;
+			if (lockMoveY)
 			{
-				if (this.moveSelfButton != evrbuttonId && this.controller.GetPress(evrbuttonId))
+				vector.y = 0f;
+			}
+
+			Quaternion quaternion =
+				marker.transform.rotation * Quaternion.Inverse(transform.rotation);
+			Quaternion quaternion2 = RemoveLockedAxisRot(quaternion);
+			Transform parent = target.transform.parent;
+			handle.transform.position = transform.position;
+			handle.transform.rotation = transform.rotation;
+			target.transform.parent = handle.transform;
+			handle.transform.rotation = quaternion2 * handle.transform.rotation;
+			target.transform.parent = parent;
+			m_movingSelf = true;
+		}
+
+		if (controller != null && !IsOVRGripActiveAndConflicted() && !IsInGrabbing() &&
+		    moveEnabled && !IsNewModeAndDirectInactive())
+		{
+			controller.GetPressDown(moveSelfButton);
+			controller.GetPressUp(moveSelfButton);
+			if (controller.GetPress(moveSelfButton) && !controller.GetPressDown(moveToHeadButton) &&
+			    !CheckGripMoveIgnore() && target != null)
+			{
+				Vector3 vector2 = marker.transform.position - transform.position;
+				if (lockMoveY)
 				{
-					return true;
+					vector2.y = 0f;
 				}
+
+				Quaternion quaternion3 =
+					marker.transform.rotation * Quaternion.Inverse(transform.rotation);
+				quaternion3 = RemoveLockedAxisRot(quaternion3);
+				Transform parent2 = target.transform.parent;
+				handle.transform.position = transform.position;
+				handle.transform.rotation = transform.rotation;
+				target.transform.parent = handle.transform;
+				handle.transform.rotation = quaternion3 * handle.transform.rotation;
+				handle.transform.position = handle.transform.position + vector2;
+				target.transform.parent = parent2;
+				m_movingSelf = true;
 			}
-			return false;
-		}
 
-		public abstract DeviceWrapper GetController();
-
-		protected abstract Transform GetHeadTransform();
-
-		public static bool GetLockMoveY()
-		{
-			return GripMoveControllerBase.lockMoveY;
-		}
-
-		public static bool GetLockRotHeadYZ()
-		{
-			return GripMoveControllerBase.lockRotHeadYZ;
-		}
-
-		public static bool GetLockRotXZ()
-		{
-			return GripMoveControllerBase.lockRotXZ;
-		}
-
-		public static bool GetMoveEnabled()
-		{
-			return GripMoveControllerBase.moveEnabled;
-		}
-
-		protected abstract OvrGripCollider GetOvrGripCollider();
-
-		protected abstract Text GetTextForMode();
-
-		private bool IsInGrabbing()
-		{
-			return this.menuTool != null && this.menuTool.IsGrabbing();
-		}
-
-		private bool IsInDrawMoveMode()
-		{
-			return this.menuTool != null && this.menuTool.IsDrawMode();
-		}
-
-		private bool IsNewModeAndDirectInactive()
-		{
-			return this.menuTool != null && this.menuTool.IsInNewMode() && !this.menuTool.IsDirectModeActive();
-		}
-
-		private void OVRGripForceResetWhenMoving()
-		{
-			if (this.moveSelfButton != (EVRButtonId)33)
+			if (controller.GetPress(moveSelfButton) && controller.GetPressDown(moveToHeadButton))
 			{
-				return;
+				fpModePressTime = Time.time;
 			}
-			if (this.m_movingSelf && this.ovrGripCollider != null && this.ovrGripCollider.enabled && this.ovrGripCollider.grip && Time.time - this.m_movingStartTime > 0.1f)
+
+			if (controller.GetPress(moveSelfButton) && controller.GetPressDown(moveToHeadButton) &&
+			    Time.time - fpModePressTime > 3f)
 			{
-				this.ovrGripCollider.ResetGrip();
+				ResetRotation();
 			}
-		}
 
-		private bool IsOVRGripActiveAndConflicted()
-		{
-			return this.moveSelfButton == (EVRButtonId)33 && (this.ovrGripCollider != null && this.ovrGripCollider.enabled && this.ovrGripCollider.grip);
-		}
-
-		private void OnLevelWasLoaded(int level)
-		{
-			this.head = null;
-		}
-
-		protected abstract void PostStart();
-
-		protected abstract void PreUpdate();
-
-		private Vector3 RemoveLockedAxis(Vector3 v)
-		{
-			bool flag = GripMoveControllerBase.lockRotHeadYZ;
-			if (GripMoveControllerBase.lockRotXZ)
+			if (controller.GetPress(moveSelfButton) && controller.GetPressUp(moveToHeadButton))
 			{
-				v.y = 0f;
-			}
-			return v;
-		}
-
-		private Quaternion RemoveLockedAxisRot(Quaternion q)
-		{
-			if (GripMoveControllerBase.lockRotHeadYZ)
-			{
-				if (this.headTransform == null)
+				if (Time.time - fpModePressTime > 3f)
 				{
-					this.headTransform = this.GetHeadTransform();
+					ResetRotation();
 				}
-				Transform transform = this.headTransform;
-				Vector3 vector = q * transform.up;
-				vector = transform.InverseTransformDirection(vector);
-				vector.x = 0f;
-				vector = transform.TransformDirection(vector);
-				return Quaternion.FromToRotation(transform.up, vector);
-			}
-			if (GripMoveControllerBase.lockRotXZ)
-			{
-				Vector3 eulerAngles = q.eulerAngles;
-				eulerAngles.x = 0f;
-				eulerAngles.z = 0f;
-				return Quaternion.Euler(eulerAngles);
-			}
-			return q;
-		}
-
-		public void ResetRotation()
-		{
-			GripMoveControllerBase.ResetRotation(this.target);
-		}
-
-		public static void ResetRotation(GameObject target)
-		{
-			if (target != null)
-			{
-				Vector3 eulerAngles = target.transform.rotation.eulerAngles;
-				eulerAngles.x = 0f;
-				eulerAngles.z = 0f;
-				target.transform.rotation = Quaternion.Euler(eulerAngles);
-			}
-		}
-
-		public static void SetLockMoveY(bool value)
-		{
-			GripMoveControllerBase.lockMoveY = value;
-			Settings.Instance.SetBoolValue("LockMoveY", value);
-		}
-
-		public static void SetLockRotHeadYZ(bool value)
-		{
-			GripMoveControllerBase.lockRotHeadYZ = value;
-			Settings.Instance.SetBoolValue("LockRotateHeadYZ", value);
-		}
-
-		public static void SetLockRotXZ(bool value)
-		{
-			GripMoveControllerBase.lockRotXZ = value;
-			Settings.Instance.SetBoolValue("LockRotateXZ", value);
-		}
-
-		public static void SetMoveEnabled(bool value)
-		{
-			GripMoveControllerBase.moveEnabled = value;
-		}
-
-		private void Start()
-		{
-			this.m_txMode = this.GetTextForMode();
-			this.ovrGripCollider = base.GetComponent<OvrGripCollider>();
-			this.moveSelfButton = Settings.Instance.GetButton("MoveSelfButton", (EVRButtonId)2);
-			GripMoveControllerBase.moveToHeadEnabled = Settings.Instance.GetBoolValue("MoveToHeadEnabled", true);
-			GripMoveControllerBase.hideManHeadWhenJump = Settings.Instance.GetBoolValue("HideManHeadWhenJump", true);
-			this.moveToHeadButton = Settings.Instance.GetButton("MoveToHeadButton", (EVRButtonId)32);
-			this.eyePosDeltaUp = Settings.Instance.GetFloatValue("EyePosDeltaUp", 0.1f);
-			this.eyePosDeltaForward = Settings.Instance.GetFloatValue("EyePosDeltaForward", 0.05f);
-			this.moveScreenButton = Settings.Instance.GetButton("MoveScreenButton", (EVRButtonId)33);
-			this.controller = this.GetController();
-			this.PostStart();
-		}
-
-		private void Update()
-		{
-			this.PreUpdate();
-			if (this.head == null && FirstPersonCameraHelper.IsFPSModeEnabled(SceneManager.GetActiveScene().buildIndex))
-			{
-				this.head = FirstPersonCameraHelper.FindManHead();
-			}
-			if (this.ovrGripCollider == null)
-			{
-				this.ovrGripCollider = this.GetOvrGripCollider();
-			}
-			if (this.marker == null)
-			{
-				this.marker = new GameObject("_marker_" + base.name);
-				this.marker.transform.parent = base.transform.parent;
-				this.marker.transform.position = base.transform.position;
-				this.marker.transform.rotation = base.transform.rotation;
-			}
-			if (this.handle == null)
-			{
-				this.handle = new GameObject("_handle_" + base.name);
-				this.handle.transform.parent = base.transform.parent;
-				this.handle.transform.position = base.transform.position;
-				this.handle.transform.rotation = base.transform.rotation;
-			}
-			this.OVRGripForceResetWhenMoving();
-			bool movingSelf = this.m_movingSelf;
-			this.m_movingSelf = false;
-			if (this.controller != null && !this.IsOVRGripActiveAndConflicted() && !this.IsInGrabbing() && GripMoveControllerBase.moveEnabled && this.IsNewModeAndDirectInactive() && this.IsInDrawMoveMode() && this.target != null)
-			{
-				Vector3 vector = this.marker.transform.position - base.transform.position;
-				if (GripMoveControllerBase.lockMoveY)
+				else if (target != null && head != null)
 				{
-					vector.y = 0f;
-				}
-				Quaternion quaternion = this.marker.transform.rotation * Quaternion.Inverse(base.transform.rotation);
-				Quaternion quaternion2 = this.RemoveLockedAxisRot(quaternion);
-				Transform parent = this.target.transform.parent;
-				this.handle.transform.position = base.transform.position;
-				this.handle.transform.rotation = base.transform.rotation;
-				this.target.transform.parent = this.handle.transform;
-				this.handle.transform.rotation = quaternion2 * this.handle.transform.rotation;
-				this.target.transform.parent = parent;
-				this.m_movingSelf = true;
-			}
-			if (this.controller != null && !this.IsOVRGripActiveAndConflicted() && !this.IsInGrabbing() && GripMoveControllerBase.moveEnabled && !this.IsNewModeAndDirectInactive())
-			{
-				this.controller.GetPressDown(this.moveSelfButton);
-				this.controller.GetPressUp(this.moveSelfButton);
-				if (this.controller.GetPress(this.moveSelfButton) && !this.controller.GetPressDown(this.moveToHeadButton) && !this.CheckGripMoveIgnore() && this.target != null)
-				{
-					Vector3 vector2 = this.marker.transform.position - base.transform.position;
-					if (GripMoveControllerBase.lockMoveY)
+					Vector3 vector3 = head.transform.TransformDirection(new Vector3(0f, -1f, 0f));
+					Vector3 vector4 = head.transform.TransformDirection(new Vector3(0f, 0f, 1f));
+					if (headTransform == null)
 					{
-						vector2.y = 0f;
+						headTransform = GetHeadTransform();
 					}
-					Quaternion quaternion3 = this.marker.transform.rotation * Quaternion.Inverse(base.transform.rotation);
-					quaternion3 = this.RemoveLockedAxisRot(quaternion3);
-					Transform parent2 = this.target.transform.parent;
-					this.handle.transform.position = base.transform.position;
-					this.handle.transform.rotation = base.transform.rotation;
-					this.target.transform.parent = this.handle.transform;
-					this.handle.transform.rotation = quaternion3 * this.handle.transform.rotation;
-					this.handle.transform.position = this.handle.transform.position + vector2;
-					this.target.transform.parent = parent2;
-					this.m_movingSelf = true;
-				}
-				if (this.controller.GetPress(this.moveSelfButton) && this.controller.GetPressDown(this.moveToHeadButton))
-				{
-					this.fpModePressTime = Time.time;
-				}
-				if (this.controller.GetPress(this.moveSelfButton) && this.controller.GetPressDown(this.moveToHeadButton) && Time.time - this.fpModePressTime > 3f)
-				{
-					this.ResetRotation();
-				}
-				if (this.controller.GetPress(this.moveSelfButton) && this.controller.GetPressUp(this.moveToHeadButton))
-				{
-					if (Time.time - this.fpModePressTime > 3f)
+
+					Vector3 vector5 = headTransform.TransformDirection(new Vector3(0f, 0f, 1f));
+					Vector3 vector6 = RemoveLockedAxis(vector3);
+					var quaternion4 = Quaternion.FromToRotation(RemoveLockedAxis(vector5), vector6);
+					Vector3 vector7 = head.transform.position - headTransform.position +
+					                  vector3.normalized * eyePosDeltaForward +
+					                  vector4.normalized * eyePosDeltaUp;
+					Transform parent3 = target.transform.parent;
+					handle.transform.position = headTransform.position;
+					handle.transform.rotation = headTransform.rotation;
+					target.transform.parent = handle.transform;
+					handle.transform.rotation =
+						RemoveLockedAxisRot(quaternion4) * handle.transform.rotation;
+					handle.transform.position = handle.transform.position + vector7;
+					target.transform.parent = parent3;
+					if (hideManHeadWhenJump)
 					{
-						this.ResetRotation();
-					}
-					else if (this.target != null && this.head != null)
-					{
-						Vector3 vector3 = this.head.transform.TransformDirection(new Vector3(0f, -1f, 0f));
-						Vector3 vector4 = this.head.transform.TransformDirection(new Vector3(0f, 0f, 1f));
-						if (this.headTransform == null)
+						SkinnedMeshRenderer component = head.GetComponent<SkinnedMeshRenderer>();
+						if (component != null)
 						{
-							this.headTransform = this.GetHeadTransform();
+							component.enabled = false;
 						}
-						Vector3 vector5 = this.headTransform.TransformDirection(new Vector3(0f, 0f, 1f));
-						Vector3 vector6 = this.RemoveLockedAxis(vector3);
-						Quaternion quaternion4 = Quaternion.FromToRotation(this.RemoveLockedAxis(vector5), vector6);
-						Vector3 vector7 = this.head.transform.position - this.headTransform.position + vector3.normalized * this.eyePosDeltaForward + vector4.normalized * this.eyePosDeltaUp;
-						Transform parent3 = this.target.transform.parent;
-						this.handle.transform.position = this.headTransform.position;
-						this.handle.transform.rotation = this.headTransform.rotation;
-						this.target.transform.parent = this.handle.transform;
-						this.handle.transform.rotation = this.RemoveLockedAxisRot(quaternion4) * this.handle.transform.rotation;
-						this.handle.transform.position = this.handle.transform.position + vector7;
-						this.target.transform.parent = parent3;
-						if (GripMoveControllerBase.hideManHeadWhenJump)
-						{
-							SkinnedMeshRenderer component = this.head.GetComponent<SkinnedMeshRenderer>();
-							if (component != null)
-							{
-								component.enabled = false;
-							}
-						}
-						base.StartCoroutine("UpdateMarkerPos");
 					}
+
+					StartCoroutine("UpdateMarkerPos");
 				}
 			}
-			this.marker.transform.position = base.transform.position;
-			this.marker.transform.rotation = base.transform.rotation;
-			if (movingSelf != this.m_movingSelf)
-			{
-				this.m_movingStartTime = (this.m_movingSelf ? Time.time : 0f);
-			}
-			if (this.menuTool)
-			{
-				this.menuTool.IsMovingSelf = this.m_movingSelf;
-			}
 		}
 
-		private IEnumerator UpdateMarkerPos()
+		marker.transform.position = transform.position;
+		marker.transform.rotation = transform.rotation;
+		if (movingSelf != m_movingSelf)
 		{
-			yield return new WaitForEndOfFrame();
-			this.marker.transform.position = this.transform.position;
-			this.marker.transform.rotation = this.transform.rotation;
-			yield break;
+			m_movingStartTime = m_movingSelf ? Time.time : 0f;
 		}
 
-		public bool ToggleNewOldUI()
+		if (menuTool)
 		{
-			if (this.menuTool)
+			menuTool.IsMovingSelf = m_movingSelf;
+		}
+	}
+
+	private void OnLevelWasLoaded(int level) => head = null;
+
+	protected virtual bool CheckGripMoveIgnore()
+	{
+		foreach (EVRButtonId evrbuttonId in new[]
+		         {
+			         (EVRButtonId)2, (EVRButtonId)33, (EVRButtonId)32
+		         })
+		{
+			if (moveSelfButton != evrbuttonId && controller.GetPress(evrbuttonId))
 			{
-				this.menuTool.ToggleNewOldUI();
 				return true;
 			}
-			return false;
 		}
 
-		protected DeviceWrapper controller;
+		return false;
+	}
 
-		protected GameObject marker;
+	public abstract DeviceWrapper GetController();
 
-		protected GameObject handle;
+	protected abstract Transform GetHeadTransform();
 
-		public GameObject target;
+	public static bool GetLockMoveY() => lockMoveY;
 
-		private Text m_txMode;
+	public static bool GetLockRotHeadYZ() => lockRotHeadYZ;
 
-		protected EVRButtonId moveSelfButton;
+	public static bool GetLockRotXZ() => lockRotXZ;
 
-		protected EVRButtonId moveScreenButton;
+	public static bool GetMoveEnabled() => moveEnabled;
 
-		private static bool lockRotHeadYZ = Settings.Instance.GetBoolValue("LockRotateHeadYZ", false);
+	protected abstract OvrGripCollider GetOvrGripCollider();
 
-		private static bool lockRotXZ = Settings.Instance.GetBoolValue("LockRotateXZ", true);
+	protected abstract Text GetTextForMode();
 
-		private static bool moveToHeadEnabled = true;
+	private bool IsInGrabbing() => menuTool != null && menuTool.IsGrabbing();
 
-		private static bool hideManHeadWhenJump = true;
+	private bool IsInDrawMoveMode() => menuTool != null && menuTool.IsDrawMode();
 
-		protected EVRButtonId moveToHeadButton;
+	private bool IsNewModeAndDirectInactive() => menuTool != null && menuTool.IsInNewMode() &&
+	                                             !menuTool.IsDirectModeActive();
 
-		private GameObject head;
+	private void OVRGripForceResetWhenMoving()
+	{
+		if (moveSelfButton != (EVRButtonId)33)
+		{
+			return;
+		}
 
-		private float eyePosDeltaUp = 0.1f;
+		if (m_movingSelf && ovrGripCollider != null && ovrGripCollider.enabled &&
+		    ovrGripCollider.grip && Time.time - m_movingStartTime > 0.1f)
+		{
+			ovrGripCollider.ResetGrip();
+		}
+	}
 
-		private float eyePosDeltaForward = 0.05f;
+	private bool IsOVRGripActiveAndConflicted() => moveSelfButton == (EVRButtonId)33 &&
+	                                               ovrGripCollider != null &&
+	                                               ovrGripCollider.enabled && ovrGripCollider.grip;
 
-		private float fpModePressTime;
+	protected abstract void PostStart();
 
-		private Transform headTransform;
+	protected abstract void PreUpdate();
 
-		private OvrGripCollider ovrGripCollider;
+	private Vector3 RemoveLockedAxis(Vector3 v)
+	{
+		bool flag = lockRotHeadYZ;
+		if (lockRotXZ)
+		{
+			v.y = 0f;
+		}
 
-		private static bool lockMoveY = Settings.Instance.GetBoolValue("LockMoveY", false);
+		return v;
+	}
 
-		private static bool moveEnabled = true;
+	private Quaternion RemoveLockedAxisRot(Quaternion q)
+	{
+		if (lockRotHeadYZ)
+		{
+			if (headTransform == null)
+			{
+				headTransform = GetHeadTransform();
+			}
 
-		protected MenuToolBase menuTool;
+			Transform transform = headTransform;
+			Vector3 vector = q * transform.up;
+			vector = transform.InverseTransformDirection(vector);
+			vector.x = 0f;
+			vector = transform.TransformDirection(vector);
+			return Quaternion.FromToRotation(transform.up, vector);
+		}
 
-		private bool m_movingSelf;
+		if (lockRotXZ)
+		{
+			Vector3 eulerAngles = q.eulerAngles;
+			eulerAngles.x = 0f;
+			eulerAngles.z = 0f;
+			return Quaternion.Euler(eulerAngles);
+		}
 
-		private float m_movingStartTime;
+		return q;
+	}
 
-		private const float OVR_GRIP_FORCE_RESET_TIME = 0.1f;
+	public void ResetRotation() => ResetRotation(target);
+
+	public static void ResetRotation(GameObject target)
+	{
+		if (target != null)
+		{
+			Vector3 eulerAngles = target.transform.rotation.eulerAngles;
+			eulerAngles.x = 0f;
+			eulerAngles.z = 0f;
+			target.transform.rotation = Quaternion.Euler(eulerAngles);
+		}
+	}
+
+	public static void SetLockMoveY(bool value)
+	{
+		lockMoveY = value;
+		Settings.Instance.SetBoolValue("LockMoveY", value);
+	}
+
+	public static void SetLockRotHeadYZ(bool value)
+	{
+		lockRotHeadYZ = value;
+		Settings.Instance.SetBoolValue("LockRotateHeadYZ", value);
+	}
+
+	public static void SetLockRotXZ(bool value)
+	{
+		lockRotXZ = value;
+		Settings.Instance.SetBoolValue("LockRotateXZ", value);
+	}
+
+	public static void SetMoveEnabled(bool value) => moveEnabled = value;
+
+	private IEnumerator UpdateMarkerPos()
+	{
+		yield return new WaitForEndOfFrame();
+		marker.transform.position = transform.position;
+		marker.transform.rotation = transform.rotation;
+		yield break;
+	}
+
+	public bool ToggleNewOldUI()
+	{
+		if (menuTool)
+		{
+			menuTool.ToggleNewOldUI();
+			return true;
+		}
+
+		return false;
 	}
 }

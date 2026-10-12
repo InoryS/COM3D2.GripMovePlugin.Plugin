@@ -2,24 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+public class MoveableGUIObject : MonoBehaviour
 {
-	public class MoveableGUIObject : MonoBehaviour
+	public List<Action<MonoBehaviour>> onMoveLister = new();
+
+	public void OnMoved()
 	{
-		public void OnMoved()
+		foreach (Action<MonoBehaviour> action in onMoveLister)
 		{
-			foreach (Action<MonoBehaviour> action in this.onMoveLister)
+			try
 			{
-				try
-				{
-					action(this);
-				}
-				catch
-				{
-				}
+				action(this);
+			}
+			catch
+			{
 			}
 		}
-
-		public List<Action<MonoBehaviour>> onMoveLister = new List<Action<MonoBehaviour>>();
 	}
 }

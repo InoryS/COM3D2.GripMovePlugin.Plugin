@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace CM3D2.GripMovePlugin.Plugin;
 
-namespace CM3D2.GripMovePlugin.Plugin
+public enum ControllerTouchAreaName
 {
-	public enum ControllerTouchAreaName
-	{
-		MOUTH = 1,
-		HAND_L,
-		HAND_R = 4
-	}
+	MOUTH = 1,
+	HAND_L,
+	HAND_R = 4
 }

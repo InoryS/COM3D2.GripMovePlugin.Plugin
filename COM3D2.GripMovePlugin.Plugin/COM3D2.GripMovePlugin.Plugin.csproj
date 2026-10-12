@@ -1,37 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net35</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <AssemblyName>COM3D2.GripMovePlugin.Plugin</AssemblyName>
-    <RootNamespace>COM3D2.GripMovePlugin.Plugin</RootNamespace>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Nullable>disable</Nullable>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Deterministic>true</Deterministic>
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Version>0.8.9.4</Version>
-    <AssemblyTitle>GripMovePlugin</AssemblyTitle>
-    <Product>GripMovePlugin</Product>
-    <Copyright>Copyright ©  2016</Copyright>
-    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <RestoreAdditionalProjectSources>
-      https://api.nuget.org/v3/index.json;
-      https://nuget.bepinex.dev/v3/index.json;
-      https://nuget.samboy.dev/v3/index.json
-    </RestoreAdditionalProjectSources>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="COM3D2.GameLibs" Version="2.43.1-r.0"/>
-    <PackageReference Include="UnityEngine.Modules" Version="5.6.4" IncludeAssets="compile"/>
+    <PackageReference Include="UnityEngine.Modules" IncludeAssets="compile" Version="5.6.4"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -43,7 +14,6 @@
     </Reference>
   </ItemGroup>
 
-
   <ItemGroup>
     <EmbeddedResource Include="CM3D2\GripMovePlugin\Plugin\Resources\gripmovepluginshaders.bin">
       <LogicalName>CM3D2.GripMovePlugin.Plugin.Resources.gripmovepluginshaders.bin</LogicalName>
@@ -54,7 +24,37 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" Version="1.0.3"/>
   </ItemGroup>
+
+  <PropertyGroup>
+    <AssemblyTitle>GripMovePlugin</AssemblyTitle>
+    <Copyright>Copyright © 2016</Copyright>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <Product>GripMovePlugin</Product>
+    <Version>0.8.9.4</Version>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>COM3D2.GripMovePlugin.Plugin</AssemblyName>
+    <DebugType>portable</DebugType>
+    <Deterministic>true</Deterministic>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <RootNamespace>COM3D2.GripMovePlugin.Plugin</RootNamespace>
+    <TargetFramework>net35</TargetFramework>
+  </PropertyGroup>
 
 </Project>

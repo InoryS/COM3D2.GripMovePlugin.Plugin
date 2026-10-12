@@ -2,118 +2,113 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CM3D2.GripMovePlugin.Plugin
+namespace CM3D2.GripMovePlugin.Plugin;
+
+public class DirectTouchController : MonoBehaviour
 {
-	public class DirectTouchController : MonoBehaviour
+	public float radius;
+
+	public ControllerTouchAreaName areaName;
+
+	public DeviceWrapper vrdeviceWrapper;
+
+	private SteamVR_TrackedObject _trackedObject;
+
+	public List<TouchArea> lastAddedTAs = new();
+
+	public List<TouchArea> lastOnHitTAs = new();
+
+	public List<TouchArea> lastRemainTAs = new();
+
+	public List<TouchArea> lastRemovedTAs = new();
+
+	public Action<DirectTouchController, TouchArea, bool> onHitHandler;
+
+	public Action<DirectTouchController, TouchArea> onStayHandler;
+
+	private float pos_len;
+
+	private Vector3 position = Vector3.zero;
+
+	public SteamVR_Controller.Device vrcontroller
 	{
-		public SteamVR_Controller.Device vrcontroller
+		get
 		{
-			get
+			if (_trackedObject == null)
 			{
-				if (this._trackedObject == null)
-				{
-					return null;
-				}
-				return SteamVR_Controller.Input((int)this._trackedObject.index);
+				return null;
 			}
-		}
 
-		private void Awake()
-		{
-			this._trackedObject = base.GetComponent<SteamVR_TrackedObject>();
+			return SteamVR_Controller.Input((int)_trackedObject.index);
 		}
+	}
 
-		public void HitTest(List<TouchArea> touchAreas)
+	private void Awake() => _trackedObject = GetComponent<SteamVR_TrackedObject>();
+
+	private void OnDestroy() => DirectTouchTool.Instance.controllers.Remove(this);
+
+	public void HitTest(List<TouchArea> touchAreas)
+	{
+		var list = new List<TouchArea>();
+		var list2 = new List<TouchArea>();
+		var list3 = new List<TouchArea>();
+		var list4 = new List<TouchArea>();
+		Vector3 vector = transform.TransformDirection(position) * pos_len;
+		vector += transform.position;
+		foreach (TouchArea touchArea in touchAreas)
 		{
-			List<TouchArea> list = new List<TouchArea>();
-			List<TouchArea> list2 = new List<TouchArea>();
-			List<TouchArea> list3 = new List<TouchArea>();
-			List<TouchArea> list4 = new List<TouchArea>();
-			Vector3 vector = base.transform.TransformDirection(this.position) * this.pos_len;
-			vector += base.transform.position;
-			foreach (TouchArea touchArea in touchAreas)
+			if (!touchArea.TestHit(vector, radius))
 			{
-				if (!touchArea.TestHit(vector, this.radius))
+				if (lastOnHitTAs.Contains(touchArea))
 				{
-					if (this.lastOnHitTAs.Contains(touchArea))
-					{
-						this.TriggerStateChange(touchArea, false);
-						list4.Add(touchArea);
-					}
+					TriggerStateChange(touchArea, false);
+					list4.Add(touchArea);
+				}
+			}
+			else
+			{
+				list.Add(touchArea);
+				if (lastOnHitTAs.Contains(touchArea))
+				{
+					list3.Add(touchArea);
 				}
 				else
 				{
-					list.Add(touchArea);
-					if (this.lastOnHitTAs.Contains(touchArea))
-					{
-						list3.Add(touchArea);
-					}
-					else
-					{
-						this.TriggerStateChange(touchArea, true);
-						list2.Add(touchArea);
-					}
+					TriggerStateChange(touchArea, true);
+					list2.Add(touchArea);
 				}
 			}
-			this.lastOnHitTAs = list;
-			this.lastAddedTAs = list2;
-			this.lastRemainTAs = list3;
-			this.lastRemovedTAs = list4;
-			foreach (TouchArea touchArea2 in this.lastRemainTAs)
-			{
-				this.TriggerStay(touchArea2);
-			}
 		}
 
-		private void OnDestroy()
+		lastOnHitTAs = list;
+		lastAddedTAs = list2;
+		lastRemainTAs = list3;
+		lastRemovedTAs = list4;
+		foreach (TouchArea touchArea2 in lastRemainTAs)
 		{
-			DirectTouchTool.Instance.controllers.Remove(this);
+			TriggerStay(touchArea2);
 		}
+	}
 
-		public void SetPosition(Vector3 pos)
+	public void SetPosition(Vector3 pos)
+	{
+		position = pos.normalized;
+		pos_len = pos.magnitude;
+	}
+
+	private void TriggerStateChange(TouchArea ta, bool onHit)
+	{
+		if (onHitHandler != null)
 		{
-			this.position = pos.normalized;
-			this.pos_len = pos.magnitude;
+			onHitHandler(this, ta, onHit);
 		}
+	}
 
-		private void TriggerStateChange(TouchArea ta, bool onHit)
+	private void TriggerStay(TouchArea ta)
+	{
+		if (onStayHandler != null)
 		{
-			if (this.onHitHandler != null)
-			{
-				this.onHitHandler(this, ta, onHit);
-			}
+			onStayHandler(this, ta);
 		}
-
-		private void TriggerStay(TouchArea ta)
-		{
-			if (this.onStayHandler != null)
-			{
-				this.onStayHandler(this, ta);
-			}
-		}
-
-		public float radius;
-
-		private Vector3 position = Vector3.zero;
-
-		private float pos_len;
-
-		public ControllerTouchAreaName areaName;
-
-		public List<TouchArea> lastOnHitTAs = new List<TouchArea>();
-
-		public List<TouchArea> lastAddedTAs = new List<TouchArea>();
-
-		public List<TouchArea> lastRemainTAs = new List<TouchArea>();
-
-		public List<TouchArea> lastRemovedTAs = new List<TouchArea>();
-
-		public Action<DirectTouchController, TouchArea, bool> onHitHandler;
-
-		public Action<DirectTouchController, TouchArea> onStayHandler;
-
-		private SteamVR_TrackedObject _trackedObject;
-
-		public DeviceWrapper vrdeviceWrapper;
 	}
 }

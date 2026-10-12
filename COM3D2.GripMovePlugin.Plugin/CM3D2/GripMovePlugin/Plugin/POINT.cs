@@ -1,17 +1,14 @@
-﻿using System;
+﻿namespace CM3D2.GripMovePlugin.Plugin;
 
-namespace CM3D2.GripMovePlugin.Plugin
+public struct POINT
 {
-	public struct POINT
+	public POINT(int x, int y)
 	{
-		public POINT(int x, int y)
-		{
-			this.x = x;
-			this.y = y;
-		}
-
-		public int x;
-
-		public int y;
+		this.x = x;
+		this.y = y;
 	}
+
+	public int x;
+
+	public int y;
 }
