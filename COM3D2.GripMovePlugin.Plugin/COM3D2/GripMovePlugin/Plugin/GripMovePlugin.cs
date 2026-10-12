@@ -8,12 +8,12 @@ using UnityInjector.Attributes;
 namespace COM3D2.GripMovePlugin.Plugin;
 
 [PluginName("GripMovePlugin")]
-[PluginVersion("0.8.9.4")]
+[PluginVersion("0.8.9.5")]
 public class GripMovePlugin : PluginBase
 {
 	public const string NAME = "GripMovePlugin";
 
-	public const string VERSION = "0.8.9.4";
+	public const string VERSION = "0.8.9.5";
 
 	private static readonly byte[] MenuIconPng = new byte[]
 	{
@@ -174,7 +174,7 @@ public class GripMovePlugin : PluginBase
 		uilabel.color = Color.white;
 		uilabel.trueTypeFont = defaultFont;
 		uilabel.fontSize = 18;
-		uilabel.text = "GripMovePlugin 0.8.9.4";
+		uilabel.text = "GripMovePlugin 0.8.9.5";
 		UITable uiTable = NGUITools.AddChild<UITable>(gameObject);
 		uiTable.pivot = (UIWidget.Pivot)1;
 		uiTable.columns = 1;
