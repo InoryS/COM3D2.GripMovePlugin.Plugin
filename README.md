@@ -4,6 +4,7 @@ Modified from the version distributed by [scarletkom](https://x.com/scarletkom)
 at <https://ux.getuploader.com/scarletkom_mod/download/45>, incorporating some modernization and
 custom changes.
 
+Some code form [COM3D2.GripMovePluginXR_0.8.9.4](https://ux.getuploader.com/scarletkom_mod/download/45) by [ankokusamochi](https://x.com/ankokusamochi)
 
 Not work with COM3D2.5 v3.41.0 or higher, that case please use [https://ux.getuploader.com/com3d2_mod_kyouyu_g/download/186](https://ux.getuploader.com/com3d2_mod_kyouyu_g/download/186)
 
@@ -12,37 +13,3 @@ Not work with COM3D2.5 v3.41.0 or higher, that case please use [https://ux.getup
 Original reamde says, `改造、複製、再配布等はかまいませんが、本家及や更新版がリリースされた際はそちらに置き換えるようお願いします。`
 
 So this is a modified version.
-
-```
-cm3d2_k_121で配布されていたGripMovePluginのCOM3D2.5向けの修正版で、X0が導入された際に変更されたGearメニューに対応させたものとなります。
-配布はGripMovePluginのみとなります。PhotoIKBase.Pluginは同梱していません。
-
-一応COM3D2でも動作しますが、COM3D2に関する修正は特にありません。
-
-また、機能についてはcm3d2_k_121配下にあるオリジナルの「readme.txt」、「readme_ja.txt」及びcm3d2_k_121で追加された「ReadMe.txt」、「更新内容.txt」をご確認ください。
-
-====================================================================================================
-※MODはKISSサポート対象外です。
-※MODを利用するに当たり、問題が発生してもKISSは一切の責任を負いかねます。
-※「カスタムオーダーメイド3D2」か「CR EditSystem」をを購入されている方のみが利用できます。
-※「カスタムオーダーメイド3D2」か「CR EditSystem」上で表示する目的以外の利用は禁止します。
-※「カスタムメイド3D2」上では利用しないで下さい。
-※これらの事項は http://kisskiss.tv/kiss/diary.php?no=558 を優先します。
-====================================================================================================
-
-〇更新履歴
-2022/4/2 0.9.8.4修正版
-
-〇導入方法
-UnityInjectorの中身をCOM3D2_5\Sybaris\UnityInjectorに置いてください。
-オリジナルが既にインストールされている場合はdllのみ置き換えてください。
-
-〇作成
-@scarletkom : https://twitter.com/scarletkom
-
-〇再配布等について
-このプラグインは本家及や更新版の繋ぎです。
-改造、複製、再配布等はかまいませんが、本家及や更新版がリリースされた際はそちらに置き換えるようお願いします。
-
-その他、ご意見、ご感想、不具合、問題等はツイッターにお願いします。
-```
