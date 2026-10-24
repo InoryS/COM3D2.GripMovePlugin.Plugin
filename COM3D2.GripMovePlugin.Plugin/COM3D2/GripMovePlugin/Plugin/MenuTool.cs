@@ -81,25 +81,25 @@ internal class MenuTool : MenuToolBase
 
 	protected override bool CheckActivateDirectMode()
 	{
-		if (controller.GetPressDown(1))
+		if (controller.GetPressDown((EVRButtonId)1))
 		{
 			menuPressStart = Time.time;
 		}
 
-		return (Gui == null || IsDirectModeActive()) && controller.GetPress(1) &&
+		return (Gui == null || IsDirectModeActive()) && controller.GetPress((EVRButtonId)1) &&
 		       Time.time - menuPressStart > activateOrResetSec;
 	}
 
 	protected override bool CheckSwitchCommandTool() =>
-		controller.GetPressUp(1) && controller.GetPress(yotogiToolButton);
+		controller.GetPressUp((EVRButtonId)1) && controller.GetPress(yotogiToolButton);
 
 	protected override bool CheckSwitchDirectMode() => (IsGrabMode() || IsDirectModeActive()) &&
-	                                                   controller.GetPressUp(1) &&
+	                                                   controller.GetPressUp((EVRButtonId)1) &&
 	                                                   Time.time - menuPressStart <=
 	                                                   activateOrResetSec;
 
 	protected override bool CheckSwitchIKTool() =>
-		controller.GetPressUp(1) && controller.GetPress(IKToolButton);
+		controller.GetPressUp((EVRButtonId)1) && controller.GetPress(IKToolButton);
 
 	public override DeviceWrapper GetController()
 	{
@@ -197,14 +197,14 @@ internal class MenuTool : MenuToolBase
 		if (screenGrabbed || (!IsCommandToolActive() && !IsIKToolActive() &&
 		                      !this.controller.GetPress(grabScreenButton)))
 		{
-			if (controller.GetPressDown(32))
+			if (controller.GetPressDown((EVRButtonId)32))
 			{
 				pressLeft = controller.GetAxis().x < 0.3f;
 				Win32API.MouseEvent(pressLeft ? 2 : 8);
 				pressDownTime = Time.time;
 			}
 
-			if (controller.GetPressUp(32))
+			if (controller.GetPressUp((EVRButtonId)32))
 			{
 				Win32API.MouseEvent(pressLeft ? 4 : 16);
 				pressDownTime = 0f;
@@ -224,12 +224,12 @@ internal class MenuTool : MenuToolBase
 		if (!screenGrabbed && !IsCommandToolActive() && !IsIKToolActive() &&
 		    IsOvrTabletCtrlOutOfRange())
 		{
-			if (device.GetTouchDown(32))
+			if (device.GetTouchDown((EVRButtonId)32))
 			{
 				touchDownPosition = device.GetAxis();
 			}
 
-			if (device.GetTouch(32) && Time.time - pressDownTime > 0.3f)
+			if (device.GetTouch((EVRButtonId)32) && Time.time - pressDownTime > 0.3f)
 			{
 				int num = 1280;
 				int num2 = 720;
@@ -246,12 +246,12 @@ internal class MenuTool : MenuToolBase
 
 		if (!screenGrabbed && IsCommandToolActive())
 		{
-			if (controller.GetTouchDown(32))
+			if (controller.GetTouchDown((EVRButtonId)32))
 			{
 				touchDownPosition = controller.GetAxis();
 			}
 
-			if (controller.GetTouch(32) && Time.time - pressDownTime > 0.3f)
+			if (controller.GetTouch((EVRButtonId)32) && Time.time - pressDownTime > 0.3f)
 			{
 				Vector2 axis2 = controller.GetAxis();
 				float x = (axis2 - touchDownPosition).x;
@@ -259,12 +259,12 @@ internal class MenuTool : MenuToolBase
 				touchDownPosition = axis2;
 			}
 
-			if (controller.GetPressDown(32))
+			if (controller.GetPressDown((EVRButtonId)32))
 			{
 				pressDownTime = Time.time;
 			}
 
-			if (controller.GetPressUp(32))
+			if (controller.GetPressUp((EVRButtonId)32))
 			{
 				if (!moveToHeadEnabled || moveToHeadButton != (EVRButtonId)32 ||
 				    !controller.GetPress(moveSelfButton))

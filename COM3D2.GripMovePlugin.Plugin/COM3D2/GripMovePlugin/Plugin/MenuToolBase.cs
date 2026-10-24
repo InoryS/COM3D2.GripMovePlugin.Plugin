@@ -685,7 +685,7 @@ internal abstract class MenuToolBase : MonoBehaviour
 #if COM3D25_UNITY_2022
 				AVRControllerButtons.BTN.VIRTUAL_L_CLICK
 #else
-				32
+				(EVRButtonId)32
 #endif
 			))
 			{
@@ -708,7 +708,7 @@ internal abstract class MenuToolBase : MonoBehaviour
 #if COM3D25_UNITY_2022
 				AVRControllerButtons.BTN.VIRTUAL_L_CLICK
 #else
-				32
+				(EVRButtonId)32
 #endif
 			))
 			{

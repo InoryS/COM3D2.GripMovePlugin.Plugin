@@ -52,25 +52,27 @@ internal class MenuToolTouch : MenuToolBase
 
 	protected override bool CheckActivateDirectMode()
 	{
-		if (controller.GetPressDown(1))
+		if (controller.GetPressDown((EVRButtonId)1))
 		{
 			resetTimeStart = Time.time;
 		}
 
-		return (Gui == null || IsDirectModeActive()) && controller.GetPress(1) &&
+		return (Gui == null || IsDirectModeActive()) && controller.GetPress((EVRButtonId)1) &&
 		       Time.time - resetTimeStart > activateOrResetSec;
 	}
 
 	protected override bool CheckSwitchCommandTool() =>
-		!device.GetPress(33) && device.GetPress(2) && device.GetPressUp(1);
+		!device.GetPress((EVRButtonId)33) && device.GetPress((EVRButtonId)2) &&
+		device.GetPressUp((EVRButtonId)1);
 
 	protected override bool CheckSwitchDirectMode() => (IsDirectModeActive() || IsGrabMode()) &&
-	                                                   controller.GetPressUp(1) &&
+	                                                   controller.GetPressUp((EVRButtonId)1) &&
 	                                                   Time.time - resetTimeStart <=
 	                                                   activateOrResetSec;
 
 	protected override bool CheckSwitchIKTool() =>
-		!device.GetPress(33) && device.GetPress(2) && device.GetPressUp(1);
+		!device.GetPress((EVRButtonId)33) && device.GetPress((EVRButtonId)2) &&
+		device.GetPressUp((EVRButtonId)1);
 
 	public override DeviceWrapper GetController()
 	{
@@ -165,7 +167,7 @@ internal class MenuToolTouch : MenuToolBase
 			return;
 		}
 
-		if (controller.GetPressUp(32) && pressDownTime != 0f)
+		if (controller.GetPressUp((EVRButtonId)32) && pressDownTime != 0f)
 		{
 			Win32API.MouseEvent(4);
 			pressDownTime = 0f;
@@ -194,7 +196,7 @@ internal class MenuToolTouch : MenuToolBase
 		}
 		else
 		{
-			if (!controller.GetPress(1))
+			if (!controller.GetPress((EVRButtonId)1))
 			{
 				resetTimeStart = float.MaxValue;
 			}
@@ -229,7 +231,7 @@ internal class MenuToolTouch : MenuToolBase
 					commandTool.UpdateCommandListLocation(axis2.y * 0.2f);
 				}
 
-				if (this.controller.GetPressUp(32) && (!moveToHeadEnabled ||
+				if (this.controller.GetPressUp((EVRButtonId)32) && (!moveToHeadEnabled ||
 				                                       moveToHeadButton != (EVRButtonId)32 ||
 				                                       !this.controller.GetPress(moveSelfButton)))
 				{
@@ -241,7 +243,7 @@ internal class MenuToolTouch : MenuToolBase
 		if (screenGrabbed || (!IsCommandToolActive() && !IsIKToolActive() &&
 		                      !this.controller.GetPress(grabScreenButton)))
 		{
-			if (controller.GetPressDown(32))
+			if (controller.GetPressDown((EVRButtonId)32))
 			{
 				pressLeft = true;
 				Win32API.MouseEvent(2);

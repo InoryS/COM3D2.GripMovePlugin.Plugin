@@ -1,6 +1,7 @@
 ﻿#if !COM3D25_UNITY_2022
 using UnityEngine;
 using UnityEngine.UI;
+using Valve.VR;
 
 namespace COM3D2.GripMovePlugin.Plugin;
 
@@ -13,7 +14,7 @@ internal class GripMoveController : GripMoveControllerBase
 	private Transform vrHeadGameViewTrans;
 
 	protected override bool CheckGripMoveIgnore() =>
-		controller.GetTouch(32) || base.CheckGripMoveIgnore();
+		controller.GetTouch((EVRButtonId)32) || base.CheckGripMoveIgnore();
 
 	public override DeviceWrapper GetController()
 	{
