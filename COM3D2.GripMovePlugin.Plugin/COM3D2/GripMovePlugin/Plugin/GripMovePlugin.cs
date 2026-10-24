@@ -8,12 +8,12 @@ using UnityInjector.Attributes;
 namespace COM3D2.GripMovePlugin.Plugin;
 
 [PluginName("GripMovePlugin")]
-[PluginVersion("0.9.0.1")]
+[PluginVersion("0.9.0.2")]
 public class GripMovePlugin : PluginBase
 {
 	public const string NAME = "GripMovePlugin";
 
-	public const string VERSION = "0.9.0.1";
+	public const string VERSION = "0.9.0.2";
 
 	private static readonly byte[] MenuIconPng = new byte[]
 	{
