@@ -338,3 +338,7 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# 发布包输出目录（.github/scripts/package.py 本地跑出来的产物）
+# Release archives produced locally by .github/scripts/package.py
+/dist/

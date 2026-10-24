@@ -6,39 +6,53 @@ on:
   pull_request:
     branches: [ "master","main" ]
 
+# 同一分支/PR 只保留最新一次构建，连续 push 时把排队的旧构建取消
+# Keep only the latest build per branch/PR, cancel the queued ones on rapid pushes
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.x'
 
+      # 版本号在 [PluginVersion]、VERSION 常量、csproj <Version> 三处重复出现，
+      # 这里先校验三处一致，免得等到发版那天才发现漏改
+      # The version is written down in three places, check they agree so a forgotten bump
+      # surfaces here instead of on release day
+      - name: Check Version Consistency
+        run: python3 .github/scripts/version.py
+
       # COM3D2 (Unity 5.6.4, net35)
       - name: Build COM3D2
-        run: |
-          dotnet build -c COM3D2-Release
+        run: dotnet build -c COM3D2-Release
 
+      # 只上传插件 DLL。输出目录里还有从 GameLibs 复制过来的游戏程序集，那些不该进产物
+      # Only the plugin dll is uploaded; the game assemblies copied in from GameLibs do not belong here
       - name: Publish Artifact
         uses: actions/upload-artifact@v7
         with:
           name: COM3D2.GripMovePlugin.Plugin
-          path: |
-            /home/runner/work/COM3D2.GripMovePlugin.Plugin/COM3D2.GripMovePlugin.Plugin/COM3D2.GripMovePlugin.Plugin/bin/Release/COM3D2/net35/COM3D2.GripMovePlugin.Plugin.dll
+          path: COM3D2.GripMovePlugin.Plugin/bin/Release/COM3D2/net35/COM3D2.GripMovePlugin.Plugin.dll
+          if-no-files-found: error
 
       # COM3D2.5 (Unity 2022 / XR, net48)
       - name: Build COM3D2.5
-        run: |
-          dotnet build -c COM3D25_UNITY_2022-Release
+        run: dotnet build -c COM3D25_UNITY_2022-Release
 
       - name: Publish Artifact
         uses: actions/upload-artifact@v7
         with:
           name: COM3D25.GripMovePlugin.Plugin
-          path: |
-            /home/runner/work/COM3D2.GripMovePlugin.Plugin/COM3D2.GripMovePlugin.Plugin/COM3D2.GripMovePlugin.Plugin/bin/Release/COM3D25/net48/COM3D2.GripMovePlugin.Plugin.dll
+          path: COM3D2.GripMovePlugin.Plugin/bin/Release/COM3D25/net48/COM3D2.GripMovePlugin.Plugin.dll
+          if-no-files-found: error
