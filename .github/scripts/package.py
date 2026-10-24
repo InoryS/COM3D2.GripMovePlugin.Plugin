@@ -4,17 +4,21 @@
 # License: BSD-3
 """组装发布 zip。
 
-解压到游戏根目录后的布局，和此前手工发布的包保持一致：
+包内路径按游戏根目录来摆，解压到游戏根目录即得到：
 
-    COM3D2
-      UnityInjector/COM3D2.GripMovePlugin.Plugin.dll
-      UnityInjector/Config/gripmoveplugin.ini
-
-    COM3D25
-      UnityInjector/COM3D25.GripMovePlugin.Plugin.dll
-      Config/gripmoveplugin.ini
+    Sybaris/UnityInjector/COM3D2.GripMovePlugin.Plugin.dll      （COM3D2）
+    Sybaris/UnityInjector/COM3D25.GripMovePlugin.Plugin.dll     （COM3D2.5）
+    Sybaris/UnityInjector/Config/gripmoveplugin.ini
 
     README.md（包根目录，方便解压前先看清楚该用哪个包）
+
+插件由 Sybaris 的 UnityInjector 加载，DLL 必须落在 `Sybaris/UnityInjector`，
+配置落在 `Sybaris/UnityInjector/Config`（插件里 `PluginDataPath = DataPath`，
+读的就是 UnityInjector 的配置目录）。放在游戏根目录下是不生效的。
+
+The archive mirrors the game root: the plugin lives under `Sybaris/UnityInjector`
+where Sybaris loads it from, and the ini under `Sybaris/UnityInjector/Config`,
+which is the directory `PluginBase.DataPath` points at.
 
 两个要点 / Two things worth knowing:
 
@@ -41,18 +45,20 @@ import zipfile
 
 SOURCE_DLL = "COM3D2.GripMovePlugin.Plugin.dll"
 
+# 包内路径，相对游戏根目录 / Paths inside the archive, relative to the game root
+PLUGIN_DIR = "Sybaris/UnityInjector"
+INI_PATH = "Sybaris/UnityInjector/Config/gripmoveplugin.ini"
+
 # 目标定义 / Target definitions
 TARGETS = {
     "COM3D2": {
         "build_subdir": os.path.join("COM3D2", "net35"),
         "dll_name": "COM3D2.GripMovePlugin.Plugin.dll",
-        "ini_path": "UnityInjector/Config/gripmoveplugin.ini",
         "zip_name": "COM3D2.GripMovePlugin.Plugin",
     },
     "COM3D25": {
         "build_subdir": os.path.join("COM3D25", "net48"),
         "dll_name": "COM3D25.GripMovePlugin.Plugin.dll",
-        "ini_path": "Config/gripmoveplugin.ini",
         "zip_name": "COM3D25.GripMovePlugin.Plugin",
     },
 }
@@ -173,22 +179,22 @@ def main():
 
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         dirs = set()
-        add_dir(zf, "UnityInjector", dirs)
+        add_dir(zf, PLUGIN_DIR, dirs)
 
         # 插件本体，必要时改名 / the plugin itself, renamed when the target needs it
-        add_file(zf, plugin_dll, f"UnityInjector/{target['dll_name']}")
+        add_file(zf, plugin_dll, f"{PLUGIN_DIR}/{target['dll_name']}")
 
         if not args.no_config:
             # 仓库里的 ini 是 LF（.gitattributes 会把文本规范化），游戏在 Windows 上，
             # 这里转成 CRLF 再打包，避免玩家用记事本打开时看到连成一片的内容
             # The repo copy is LF because of .gitattributes normalization; the game runs on
             # Windows, so it is converted to CRLF here to stay readable in notepad
-            add_dir(zf, os.path.dirname(target["ini_path"]), dirs)
+            add_dir(zf, os.path.dirname(INI_PATH), dirs)
             with open(ini_source, "rb") as f:
                 ini_bytes = f.read()
             validate_ini(ini_bytes, INI_SOURCE)
             ini_bytes = ini_bytes.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")
-            add_bytes(zf, target["ini_path"], ini_bytes)
+            add_bytes(zf, INI_PATH, ini_bytes)
 
         add_file(zf, readme, "README.md")
 
@@ -199,13 +205,14 @@ def main():
     with zipfile.ZipFile(zip_path) as zf:
         names = zf.namelist()
 
-    expected = {"UnityInjector/", f"UnityInjector/{target['dll_name']}", "README.md"}
-    if not args.no_config:
-        ini_dir = os.path.dirname(target["ini_path"])
-        parts = [p for p in ini_dir.split("/") if p]
+    expected = {f"{PLUGIN_DIR}/{target['dll_name']}", "README.md"}
+    dir_paths = [PLUGIN_DIR] if args.no_config else [PLUGIN_DIR, os.path.dirname(INI_PATH)]
+    for path in dir_paths:
+        parts = [p for p in path.split("/") if p]
         for i in range(len(parts)):
             expected.add("/".join(parts[: i + 1]) + "/")
-        expected.add(target["ini_path"])
+    if not args.no_config:
+        expected.add(INI_PATH)
 
     bad = [f"{n} (unexpected)" for n in names if n not in expected]
     bad += [f"{n} (missing)" for n in expected if n not in names]
